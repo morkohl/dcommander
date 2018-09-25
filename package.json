@@ -1,0 +1,27 @@
+{
+  "name": "dcommander",
+  "version": "1.0.0",
+  "description": "command argument validation and sanitization for discordjs",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ribyaboi/dcommander.git"
+  },
+  "keywords": [
+    "discord.js"
+  ],
+  "author": "rib_yaboi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ribyaboi/dcommander/issues"
+  },
+  "homepage": "https://github.com/ribyaboi/dcommander#readme",
+  "dependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0"
+  }
+}
