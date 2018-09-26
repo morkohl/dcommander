@@ -25,18 +25,28 @@ export class ArgumentBuilder {
     }
 
     required(): ArgumentBuilder {
+        return this.setRequired(true);
+    }
+
+    optional(): ArgumentBuilder {
+        return this.setRequired(false);
+    }
+
+
+    private setRequired(required: boolean): ArgumentBuilder {
         if(this.argument.required) {
             throw new Error("Argument is already set as required");
+        } else if(this.argument.required === false) {
+            throw new Error("Argument was already set as optional")
         }
-        this.argument.setRequired();
-        return this;
+        this.argument.setRequired(required);
+        return this
     }
 
     sanitize(fn: Function): ArgumentBuilder {
         this.argument.setSanitize(fn);
         return this;
     }
-
 
     string(): StringArgumentBuilder {
         return this.convertTo(StringArgumentBuilder)

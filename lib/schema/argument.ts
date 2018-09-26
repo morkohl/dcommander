@@ -12,8 +12,8 @@ export class Argument {
         this.prefix = prefix;
     }
 
-    setRequired() {
-        this.required = true;
+    setRequired(required: boolean) {
+        this.required = required;
     }
 
     setSanitize(fn: Function) {
