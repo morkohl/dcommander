@@ -1,4 +1,10 @@
-class ArgumentBuilder {
+import {TypeBuilder} from "./typeBuilder/baseBuilder";
+import {StringArgumentBuilder} from "./typeBuilder/stringBuilder";
+import {NumberArgumentBuilder} from "./typeBuilder/numberBuilder";
+import {BooleanArgumentBuilder} from "./typeBuilder/booleanBuilder";
+import {Argument} from "./argument";
+
+export class ArgumentBuilder {
     argument: Argument;
 
     constructor(argument: Argument) {
@@ -52,6 +58,8 @@ class ArgumentBuilder {
     }
 }
 
-interface Function {
-    name: string
+module argument {
+    export function argument(argumentName: string) {
+        return new ArgumentBuilder(new Argument(argumentName));
+    }
 }

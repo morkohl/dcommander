@@ -1,4 +1,4 @@
-class Argument {
+export class Argument {
     argumentName: string;
     prefix: string;
     required: boolean = false;

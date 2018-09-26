@@ -1,10 +1,14 @@
-class StringArgumentBuilder extends TypeBuilder {
+import {TypeBuilder} from "./baseBuilder";
+import {Argument} from "../argument";
+import {StringType} from "./type/string";
+
+export class StringArgumentBuilder extends TypeBuilder {
     constructor(argument: Argument) {
         super(argument, new StringType());
     }
 
     regex(regex: RegExp, errFormatter?: (value: any) => string | string): StringArgumentBuilder {
-        this.addCheck({ checkFunction: regex.test, errFormatter: errFormatter });
+        this.addValidator({ isAcceptable: regex.test, errFormatter: errFormatter });
         return this;
     }
 

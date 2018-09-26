@@ -1,24 +1,29 @@
-class TypeBuilder extends ArgumentBuilder {
-    checks: Check[];
+import {ArgumentBuilder} from "../argumentBuilder";
+import {Validator} from "../validator";
+import {Argument} from "../argument";
+import {Type} from "./type/baseType";
+
+export class TypeBuilder extends ArgumentBuilder {
+    validators: Validator[];
     protected type: Type;
 
     constructor(argument: Argument, type: Type) {
         super(argument);
         this.type = type;
-        this.checks = [];
-        this.checks.push({ checkFunction: this.type.is });
+        this.validators = [];
+        this.validators.push({ isAcceptable: this.type.is });
     }
 
-    protected addCheck(check: Check) {
-        if(this.checksIncludeFunction(check.checkFunction)) {
-            throw new Error(`${check.checkFunction.name} cannot be included into checks twice`);
+    protected addValidator(validator: Validator) {
+        if(this.validatorsInclude(validator.isAcceptable)) {
+            throw new Error(`${validator.isAcceptable.name} cannot be included into validators twice`);
         }
-        this.checks.push(check);
+        this.validators.push(validator);
     }
 
-    private checksIncludeFunction(fn: Function) {
-        for(let check of this.checks) {
-            if(!!fn.name && check.checkFunction.name === fn.name || check.checkFunction.toString() === fn.toString()) {
+    private validatorsInclude(fn: Function) {
+        for(let validator of this.validators) {
+            if(!!fn.name && validator.isAcceptable.name === fn.name || validator.isAcceptable.toString() === fn.toString()) {
                 return true;
             }
         }
