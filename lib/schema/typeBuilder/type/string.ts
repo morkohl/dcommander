@@ -1,5 +1,11 @@
-class StringType implements Type {
+import {Type} from "./baseType";
+
+export class StringType implements Type {
+    transform(value: any): string {
+        return value.toString();
+    }
+
     is(value: any): boolean {
-        return true;
+        return typeof value === 'string';
     }
 }

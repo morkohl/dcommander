@@ -1,10 +1,11 @@
-class NumberType implements Type {
+import {Type} from "./baseType";
+
+export class NumberType implements Type {
+    transform(value: any): number {
+        return Number(value.toString());
+    }
+
     is(value: any): boolean {
-        try {
-            Number(value);
-            return true;
-        } catch(err) {
-            return false;
-        }
+        return /^\d+$/.test(value.toString());
     }
 }
