@@ -1,20 +1,18 @@
-import {ArgumentBuilder} from "../argumentBuilder";
-import {Validator} from "../validator";
-import {Argument} from "../argument";
-import {Type} from "./type/baseType";
+import {Validator} from "./schemaBuilder/validator";
 
-export class TypeBuilder extends ArgumentBuilder {
+export class ArgumentSchema {
+    name: string;
+    prefix: string;
+    required: boolean;
+    sanitize: Function;
     validators: Validator[];
-    protected type: Type;
 
-    constructor(argument: Argument, type: Type) {
-        super(argument);
-        this.type = type;
+    constructor(argumentName :string) {
+        this.name = argumentName;
         this.validators = [];
-        this.validators.push({ isAcceptable: this.type.is });
     }
 
-    protected addValidator(validator: Validator) {
+    addValidator(validator: Validator) {
         if(this.validatorsInclude(validator.isAcceptable)) {
             throw new Error(`${validator.isAcceptable.name} cannot be included into validators twice`);
         }
@@ -30,3 +28,4 @@ export class TypeBuilder extends ArgumentBuilder {
         return false;
     }
 }
+

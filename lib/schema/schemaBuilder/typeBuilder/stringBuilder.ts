@@ -1,18 +1,20 @@
-import {TypeBuilder} from "./baseBuilder";
-import {Argument} from "../argument";
+import {ArgumentSchemaTypeBuilder} from "./schemaTypeBuilder";
 import {StringType} from "./type/string";
+import {ArgumentSchema} from "../../schema";
 
-export class StringArgumentBuilder extends TypeBuilder {
-    constructor(argument: Argument) {
-        super(argument, new StringType());
+export class StringSchemaBuilder extends ArgumentSchemaTypeBuilder {
+    constructor(schema: ArgumentSchema) {
+        super(schema, new StringType());
     }
 
-    regex(regex: RegExp, errFormatter?: (value: any) => string | string): StringArgumentBuilder {
-        this.addValidator({ isAcceptable: regex.test, errFormatter: errFormatter });
-        return this;
+    regex(regex: RegExp, errFormatter?: (value: any) => string | string): StringSchemaBuilder {
+        if(errFormatter) {
+            return this.satisfy(regex.test, errFormatter);
+        }
+        return this.satisfy(regex.test, (value: any) => `${value} does not pass regex test ${regex.toString()}`)
     }
 
-    ip(version: string): StringArgumentBuilder {
+    ip(version: string): StringSchemaBuilder {
         if(version.toLowerCase() === 'ipv4') {
             return this.regex(/^(?:[\d]{1,3}\.){3}\d{1,3}$/, (value: any) => `${value} is not an ipv4`);
         } else if(version.toLowerCase() === 'ipv6') {
@@ -22,11 +24,11 @@ export class StringArgumentBuilder extends TypeBuilder {
         }
     }
 
-    email(): StringArgumentBuilder {
+    email(): StringSchemaBuilder {
         return this.regex(/\S+@\S+\.\S+/, (value: any) => `${value} is not a valid email`);
     }
 
-    url(): StringArgumentBuilder {
+    url(): StringSchemaBuilder {
         return this.regex(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/, (value: any) => `${value} is not a valid URL`)
     }
 }
