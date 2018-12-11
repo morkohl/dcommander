@@ -1,9 +1,8 @@
 import * as chai from 'chai';
-import * as mocha from 'mocha';
+ import {BooleanType} from "../lib/schema/schemaBuilder/typeBuilder/type/boolean";
+import {NumberType} from "../lib/schema/schemaBuilder/typeBuilder/type/number";
+import {StringType} from "../lib/schema/schemaBuilder/typeBuilder/type/string";
 
-import {BooleanType} from "../lib/schema/typeBuilder/type/boolean";
-import {NumberType} from "../lib/schema/typeBuilder/type/number";
-import {StringType} from "../lib/schema/typeBuilder/type/string";
 
 const expect = chai.expect;
 
