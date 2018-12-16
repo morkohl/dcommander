@@ -1,6 +1,6 @@
 import {BooleanType} from "./type/boolean";
 import {ArgumentSchemaTypeBuilder} from "./schemaTypeBuilder";
-import {ArgumentSchema} from "../../schema";
+import {ArgumentSchema} from "../../ArgumentSchema";
 
 export class BooleanSchemaBuilder extends ArgumentSchemaTypeBuilder {
     constructor(argument: ArgumentSchema) {

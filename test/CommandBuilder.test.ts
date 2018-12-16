@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as mocha from 'mocha';
 import {command} from "../lib/command/commandBuilder/commandBuilder";
-import {CommandInstructions} from "../lib/command/command";
+import {CommandInstructions} from "../lib/command/CommandSchema";
 import {argument} from "../lib/schema/schemaBuilder/schemaBaseBuilder";
 import {User} from "discord.js";
 
@@ -11,7 +11,7 @@ const testExec = (instructions: CommandInstructions) => null;
 const testCanExec = (user: User) => true;
 
 describe('CommandBuilder Test', () => {
-    it('should set all properties of a command', () => {
+    it('should set all properties of a CommandSchema', () => {
         const commandArgs = [
             argument('test')
                 .prefix('--')
@@ -31,7 +31,7 @@ describe('CommandBuilder Test', () => {
         expect(commandBuilder.execution.toString()).to.eq(testExec.toString());
         expect(commandBuilder.canExecute.toString()).to.eq(testCanExec.toString());
         expect(commandBuilder.name).to.eq('test');
-        expect(commandBuilder.arguments.length).to.eq(commandArgs.length);
+        expect(commandBuilder.argumentSchema.length).to.eq(commandArgs.length);
     });
 
     it('should throw if duplicate argument names are supplied', () => {

@@ -1,13 +1,12 @@
 import {Type} from "./type/baseType";
-import {ArgumentSchema} from "../../schema";
+import {ArgumentSchema} from "../../ArgumentSchema";
 
 export class ArgumentSchemaTypeBuilder {
     __schema: ArgumentSchema;
-    protected type: Type;
 
     constructor(schema: ArgumentSchema, type: Type) {
         this.__schema = schema;
-        this.type = type;
+        this.__schema.type = type;
     }
 
     __build(): ArgumentSchema {

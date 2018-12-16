@@ -1,18 +1,18 @@
-import {Command, CommandInstructions} from "../command";
+import {CommandSchema, CommandInstructions} from "../CommandSchema";
 import {ArgumentSchemaTypeBuilder} from "../../schema/schemaBuilder/typeBuilder/schemaTypeBuilder";
-import {ArgumentSchema} from "../../schema/schema";
+import {ArgumentSchema} from "../../schema/ArgumentSchema";
 import {User} from "discord.js";
 
 export class CommandBuilder {
-    __command: Command;
+    __command: CommandSchema;
 
     constructor(commandName: string) {
-        this.__command = new Command(commandName);
+        this.__command = new CommandSchema(commandName);
     }
 
     execute(execute: (instructions: CommandInstructions) => void): this {
         if (this.__command.execution) {
-            throw new Error("Command already has a set execution function");
+            throw new Error("CommandSchema already has a set execution function");
         }
         this.__command.execution = execute;
         return this;
@@ -24,19 +24,19 @@ export class CommandBuilder {
         const argumentNameCount = builtArguments.reduce((acc, curr) => Object.assign(acc, {[curr.name]: (acc[curr.name] || 0) + 1}), {});
 
         if (Object.keys(argumentNameCount).filter((countItem: string) => argumentNameCount[countItem] > 1).length > 0) {
-            throw new Error("Command cannot have multiple arguments with the same name");
+            throw new Error("CommandSchema cannot have multiple argumentSchema with the same name");
         }
 
-        if (this.__command.arguments) {
-            throw new Error("Command already has arguments. Please define args as an array.");
+        if (this.__command.argumentSchema) {
+            throw new Error("CommandSchema already has argumentSchema. Please define args as an array.");
         }
-        this.__command.arguments = builtArguments;
+        this.__command.argumentSchema = builtArguments;
         return this;
     }
 
     cooldown(cooldown: number): this {
         if (this.__command.cooldown) {
-            throw new Error("Command already has a cooldown.")
+            throw new Error("CommandSchema already has a cooldown.")
         }
         this.__command.cooldown = cooldown;
         return this;
@@ -44,7 +44,7 @@ export class CommandBuilder {
 
     canExecute(canExecute: (user: User) => boolean): this {
         if (this.__command.canExecute) {
-            throw new Error("Command already has a set canExecute function");
+            throw new Error("CommandSchema already has a set canExecute function");
         }
         this.__command.canExecute = canExecute;
         return this;
@@ -53,13 +53,13 @@ export class CommandBuilder {
     prefix(prefix: string): this {
         //if dcommander has default prefix set then take that instead if none taken
         if (this.__command.prefix) {
-            throw new Error("Command already has a set prefix");
+            throw new Error("CommandSchema already has a set prefix");
         }
         this.__command.prefix = prefix;
         return this;
     }
 
-    __build(): Command {
+    __build(): CommandSchema {
         if (!this.__command.execution) {
             throw new Error("No execution for command set");
         }

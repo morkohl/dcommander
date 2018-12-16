@@ -1,4 +1,4 @@
-import {ArgumentSchema} from "../schema";
+import {ArgumentSchema} from "../ArgumentSchema";
 import {StringSchemaBuilder} from "./typeBuilder/stringBuilder";
 import {NumberSchemaBuilder} from "./typeBuilder/numberBuilder";
 import {BooleanSchemaBuilder} from "./typeBuilder/booleanBuilder";

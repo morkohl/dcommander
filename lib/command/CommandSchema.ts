@@ -1,11 +1,13 @@
 import {Message, Guild, User} from 'discord.js';
-import {ArgumentSchema} from "../schema/schema";
+import {ArgumentSchema} from "../schema/ArgumentSchema";
+import {Detectable} from "../parse/Parser";
+import {Argument} from "../schema/Argument";
 
-export class Command {
+export class CommandSchema implements Detectable {
     name: string;
     prefix: string;
     execution: (instructions: CommandInstructions) => void;
-    arguments: ArgumentSchema[];
+    argumentSchema: ArgumentSchema[];
     cooldown: number;
     canExecute: (user: User) => boolean;
 
@@ -15,10 +17,9 @@ export class Command {
 }
 
 export interface CommandInstructions {
-    arguments: ArgumentSchema[] | ArgumentSchema,
+    //this should be context.. and should have argumentSchema be parsed arguments
+    arguments: { [key: string]: Argument },
     message: Message,
     user: User
     server: Guild
 }
-
-
