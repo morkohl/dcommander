@@ -1,4 +1,4 @@
-import {CommandSchema} from "./CommandSchema";
+import {CommandSchema} from "../schema/CommandSchema";
 import {Message, User} from "discord.js";
 
 export class CommandManager {
@@ -9,9 +9,10 @@ export class CommandManager {
     }
 
     findCommand(message: Message): Context | null {
-        for(let command of this.commandSchemas) {
-            if(message.content.trim().startsWith(command.prefix + command.name)) {
+        for(let commandSchema of this.commandSchemas) {
+            if(message.content.trim().startsWith(commandSchema.prefix + commandSchema.name)) {
                 return {
+                    schema: commandSchema,
                     message: message,
                     contents: message.content.split(' ')
                 };
@@ -22,6 +23,7 @@ export class CommandManager {
 }
 
 export interface Context {
+    schema: CommandSchema,
     message: Message;
     contents: string[];
 }

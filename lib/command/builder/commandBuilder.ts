@@ -1,10 +1,12 @@
-import {CommandSchema, CommandInstructions} from "../CommandSchema";
-import {ArgumentSchemaTypeBuilder} from "../../schema/schemaBuilder/typeBuilder/schemaTypeBuilder";
-import {ArgumentSchema} from "../../schema/ArgumentSchema";
+import {CommandSchema, CommandInstructions} from "../schema/CommandSchema";
+import {ArgumentSchema} from "../../argument/schema/ArgumentSchema";
 import {User} from "discord.js";
+import {SchemaTypeBuilder} from "../../argument/schema/type/builder/SchemaTypeBuilder";
+import {Builder} from "../../builder/Builder";
 
-export class CommandBuilder {
+export class CommandBuilder implements Builder<CommandSchema> {
     __command: CommandSchema;
+    __argumentBuilders: SchemaTypeBuilder[];
 
     constructor(commandName: string) {
         this.__command = new CommandSchema(commandName);
@@ -18,19 +20,11 @@ export class CommandBuilder {
         return this;
     }
 
-    arguments(argumentBuilders: ArgumentSchemaTypeBuilder[]): this {
-        const builtArguments: ArgumentSchema[] = argumentBuilders.map(argumentBuilder => argumentBuilder.__build());
-
-        const argumentNameCount = builtArguments.reduce((acc, curr) => Object.assign(acc, {[curr.name]: (acc[curr.name] || 0) + 1}), {});
-
-        if (Object.keys(argumentNameCount).filter((countItem: string) => argumentNameCount[countItem] > 1).length > 0) {
-            throw new Error("CommandSchema cannot have multiple argumentSchema with the same name");
-        }
-
-        if (this.__command.argumentSchema) {
+    arguments(argumentBuilders: SchemaTypeBuilder[]): this {
+        if (this.__argumentBuilders) {
             throw new Error("CommandSchema already has argumentSchema. Please define args as an array.");
         }
-        this.__command.argumentSchema = builtArguments;
+        this.__argumentBuilders = argumentBuilders;
         return this;
     }
 
@@ -60,6 +54,17 @@ export class CommandBuilder {
     }
 
     __build(): CommandSchema {
+        if(this.__argumentBuilders) {
+            const builtArguments: ArgumentSchema[] = this.__argumentBuilders.map(builder => builder.__build());
+            //@ts-ignore
+            const argumentNameCount = builtArguments.reduce((acc, curr) => Object.assign(acc, {[curr.name]: (acc[curr.name] || 0) + 1}), {});
+            //@ts-ignore
+            if (Object.keys(argumentNameCount).filter((countItem: string) => argumentNameCount[countItem] > 1).length > 0) {
+                throw new Error("CommandSchema cannot have multiple argumentSchema with the same name");
+            }
+            this.__command.argumentSchema = builtArguments;
+        }
+
         if (!this.__command.execution) {
             throw new Error("No execution for command set");
         }

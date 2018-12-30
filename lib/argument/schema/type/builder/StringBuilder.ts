@@ -1,8 +1,8 @@
-import {ArgumentSchemaTypeBuilder} from "./schemaTypeBuilder";
-import {StringType} from "./type/string";
+import {StringType} from "../StringType";
 import {ArgumentSchema} from "../../ArgumentSchema";
+import {SchemaTypeBuilder} from "./SchemaTypeBuilder";
 
-export class StringSchemaBuilder extends ArgumentSchemaTypeBuilder {
+export class StringSchemaBuilder extends SchemaTypeBuilder {
     constructor(schema: ArgumentSchema) {
         super(schema, new StringType());
     }

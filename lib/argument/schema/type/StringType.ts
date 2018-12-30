@@ -1,4 +1,4 @@
-import {Type} from "./baseType";
+import {Type} from "./BaseType";
 
 export class StringType implements Type {
     transform(value: any): string {

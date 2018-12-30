@@ -1,13 +1,11 @@
-import {CommandSchema} from "./command/CommandSchema";
+import {CommandSchema} from "./command/schema/CommandSchema";
 import {EventEmitter} from "events";
 import {Message} from "discord.js";
-import {CommandManager} from "./command/CommandManager";
-import {CommandParser} from "./parse/Parser";
+import {CommandManager} from "./command/manager/CommandManager";
 
 export class DCommander extends EventEmitter {
     config: DCommanderConfig;
     commandManager: CommandManager;
-    parser: CommandParser;
 
     constructor(options: DCommanderConfig) {
         super();

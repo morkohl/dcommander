@@ -1,18 +1,17 @@
 import {Message, Guild, User} from 'discord.js';
-import {ArgumentSchema} from "../schema/ArgumentSchema";
-import {Detectable} from "../parse/Parser";
-import {Argument} from "../schema/Argument";
+import {ArgumentSchema, Schema} from "../../argument/schema/ArgumentSchema";
+import {Argument} from "../../argument/Argument";
 
-export class CommandSchema implements Detectable {
+export class CommandSchema extends Schema {
     name: string;
-    prefix: string;
+    prefix : string;
     execution: (instructions: CommandInstructions) => void;
     argumentSchema: ArgumentSchema[];
     cooldown: number;
     canExecute: (user: User) => boolean;
 
-    constructor(name: string) {
-        this.name = name;
+    requiredArgs() {
+        return this.argumentSchema.filter(schema => schema.required);
     }
 }
 

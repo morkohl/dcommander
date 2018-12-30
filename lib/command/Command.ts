@@ -1,5 +1,5 @@
-import {CommandInstructions} from "./CommandSchema";
-import {Argument} from "../schema/Argument";
+import {CommandInstructions} from "./schema/CommandSchema";
+import {Argument} from "../argument/Argument";
 
 export interface Command {
     name: string;

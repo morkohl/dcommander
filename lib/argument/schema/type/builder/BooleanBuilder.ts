@@ -1,8 +1,8 @@
-import {BooleanType} from "./type/boolean";
-import {ArgumentSchemaTypeBuilder} from "./schemaTypeBuilder";
+import {BooleanType} from "../BooleanType";
 import {ArgumentSchema} from "../../ArgumentSchema";
+import {SchemaTypeBuilder} from "./SchemaTypeBuilder";
 
-export class BooleanSchemaBuilder extends ArgumentSchemaTypeBuilder {
+export class BooleanSchemaBuilder extends SchemaTypeBuilder {
     constructor(argument: ArgumentSchema) {
         super(argument, new BooleanType());
     }

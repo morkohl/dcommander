@@ -1,4 +1,4 @@
-import {Type} from "./baseType";
+import {Type} from "./BaseType";
 
 export class AnyType implements Type {
     is(value: any): boolean {
@@ -8,5 +8,4 @@ export class AnyType implements Type {
     transform(value: any): any {
         return value;
     }
-
 }
