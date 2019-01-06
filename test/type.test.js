@@ -8,14 +8,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var chai = __importStar(require("chai"));
-var boolean_1 = require("../lib/argument/argumentSchemaBuilder/typeBuilder/type/boolean");
-var number_1 = require("../lib/argument/argumentSchemaBuilder/typeBuilder/type/number");
-var string_1 = require("../lib/argument/argumentSchemaBuilder/typeBuilder/type/string");
+var BooleanType_1 = require("../lib/argument/schema/type/BooleanType");
+var NumberType_1 = require("../lib/argument/schema/type/NumberType");
+var StringType_1 = require("../lib/argument/schema/type/StringType");
 var expect = chai.expect;
 describe('Type Test', function () {
     describe('Boolean Type', function () {
         it('should be true if a value is a valid boolean', function () {
-            var type = new boolean_1.BooleanType();
+            var type = new BooleanType_1.BooleanType();
             expect(type.is(true)).to.eq(true);
             expect(type.is(false)).to.eq(true);
             expect(type.is('1')).to.eq(true);
@@ -35,7 +35,7 @@ describe('Type Test', function () {
             expect(type.is('I am false')).to.eq(false);
         });
         it('should transform to a valid boolean', function () {
-            var type = new boolean_1.BooleanType();
+            var type = new BooleanType_1.BooleanType();
             expect(type.transform(true)).to.eq(true);
             expect(type.transform('true')).to.eq(true);
             expect(type.transform('1')).to.eq(true);
@@ -54,14 +54,14 @@ describe('Type Test', function () {
     });
     describe('Number Type', function () {
         it('should be true if a value is a valid number', function () {
-            var type = new number_1.NumberType();
+            var type = new NumberType_1.NumberType();
             expect(type.is(1)).to.eq(true);
             expect(type.is('1')).to.eq(true);
             expect(type.is('19a')).to.eq(false);
             expect(type.is('abc')).to.eq(false);
         });
         it('should transform to a valid number', function () {
-            var type = new number_1.NumberType();
+            var type = new NumberType_1.NumberType();
             expect(type.transform(1)).to.eq(1);
             expect(type.transform('1')).to.eq(1);
             expect(type.transform('1234')).to.eq(1234);
@@ -70,7 +70,7 @@ describe('Type Test', function () {
     });
     describe('String Type', function () {
         it('should be true if a value is a valid string', function () {
-            var type = new string_1.StringType();
+            var type = new StringType_1.StringType();
             expect(type.is('discord is spying on you right now')).to.eq(true);
             expect(type.is('b')).to.eq(true);
             expect(type.is(1)).to.eq(false);
@@ -78,7 +78,7 @@ describe('Type Test', function () {
             expect(type.is({})).to.eq(false);
         });
         it('should transform to a valid string', function () {
-            var type = new string_1.StringType();
+            var type = new StringType_1.StringType();
             expect(type.transform(1)).to.eq('1');
             expect(type.transform('1')).to.eq('1');
         });

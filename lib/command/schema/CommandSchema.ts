@@ -1,10 +1,10 @@
 import {Message, Guild, User} from 'discord.js';
-import {ArgumentSchema, Schema} from "../../argument/schema/ArgumentSchema";
+import {ArgumentSchema} from "../../argument/schema/ArgumentSchema";
 import {Argument} from "../../argument/Argument";
+import {PrefixSchema} from "../../schema/Schema";
 
-export class CommandSchema extends Schema {
+export class CommandSchema extends PrefixSchema {
     name: string;
-    prefix : string;
     execution: (instructions: CommandInstructions) => void;
     argumentSchema: ArgumentSchema[];
     cooldown: number;

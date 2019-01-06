@@ -1,7 +1,7 @@
 import * as chai from 'chai';
- import {BooleanType} from "../lib/argument/argumentSchemaBuilder/typeBuilder/type/boolean";
-import {NumberType} from "../lib/argument/argumentSchemaBuilder/typeBuilder/type/number";
-import {StringType} from "../lib/argument/argumentSchemaBuilder/typeBuilder/type/string";
+import {BooleanType} from "../lib/argument/schema/type/BooleanType";
+import {NumberType} from "../lib/argument/schema/type/NumberType";
+import {StringType} from "../lib/argument/schema/type/StringType";
 
 
 const expect = chai.expect;
