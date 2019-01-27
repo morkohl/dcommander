@@ -1,29 +1,34 @@
 import {Type} from "../BaseType";
-import {ArgumentSchema} from "../../ArgumentSchema";
+import {ArgumentSchema, OptionalArgumentSchema} from "../../ArgumentSchema";
 import {SchemaBuilder} from "../../builder/ArgumentSchemaBuilder";
 
 export class SchemaTypeBuilder extends SchemaBuilder {
-    __schema: ArgumentSchema;
-
     constructor(schema: ArgumentSchema, type: Type) {
         super(schema);
-        this.__schema.type = type;
+        this.buildObject.type = type;
     }
 
     sanitize(fn: (value: any) => any): this {
-        if(this.__schema.sanitize) {
+        if (this.buildObject.sanitize) {
             throw new Error("Sanitization function already exists.");
         }
-        this.__schema.sanitize = fn;
+        this.buildObject.sanitize = fn;
         return this;
     }
 
     satisfy(fn: (value: any) => boolean, errFormatter?: (value: any) => string): this {
-        this.__schema.addValidator({
+        this.buildObject.addValidator({
             isAcceptable: fn,
             errFormatter: errFormatter
         });
         return this;
+    }
+
+    build(): ArgumentSchema {
+        if (this.buildObject instanceof OptionalArgumentSchema && this.buildObject.isFlag) {
+            throw new Error("Flag arguments can't have a type")
+        }
+        return super.build();
     }
 }
 

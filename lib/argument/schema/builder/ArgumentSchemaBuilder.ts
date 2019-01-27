@@ -1,53 +1,50 @@
-import {ARGUMENT_CONSTANTS, ArgumentSchema} from "../ArgumentSchema";
+import {ArgumentSchema, OptionalArgumentSchema} from "../ArgumentSchema";
 import {Builder} from "../../../builder/Builder";
 
-export class SchemaBuilder implements Builder<ArgumentSchema> {
-    __schema: ArgumentSchema;
-
+export class SchemaBuilder extends Builder<ArgumentSchema> {
     constructor(schema: ArgumentSchema) {
-        this.__schema = schema;
+        super(schema);
     }
 
     optional(): this {
-        this.__schema.required = false;
+        this.buildObject = OptionalArgumentSchema.copyFromRequiredArgument(this.buildObject);
         return this;
     }
 
-    prefix(prefix?: string): this {
-        if (prefix) {
+    prefix(prefix: string): this {
+        if (this.buildObject instanceof OptionalArgumentSchema) {
             if (prefix.length === 0) {
-                throw new Error("Prefix cannot be an empty string")
+                throw new Error("Prefix cannot be an empty string");
             }
             if (prefix.includes(' ')) {
-                throw new Error("Prefix cannot include a whitespace")
+                throw new Error("Prefix cannot include a whitespace");
             }
-        }
-        this.__schema.prefix = prefix ? prefix : ARGUMENT_CONSTANTS.DEFAULT_PREFIX;
-        return this;
-    }
-
-    alias(alias?: string | string[]): this {
-        if (alias) {
-            if (typeof alias === 'string') {
-                this.__schema.aliases.push(alias);
-                return this;
-            }
-            this.__schema.aliases = alias;
             return this;
         }
-        if(this.__schema.aliases.length === 0 || this.__schema.aliases.indexOf(ARGUMENT_CONSTANTS.DEFAULT_ALIAS) < 0) {
-            this.__schema.aliases.push(ARGUMENT_CONSTANTS.DEFAULT_ALIAS);
-        }
-        return this;
+        throw new Error("Has to be optional in order to set prefix");
     }
 
-    __build(): ArgumentSchema {
-        if (!this.__schema.prefix) {
-            this.__schema.prefix = ARGUMENT_CONSTANTS.DEFAULT_PREFIX;
+    flag(): this {
+        if (this.buildObject instanceof OptionalArgumentSchema) {
+            this.buildObject.isFlag = true;
+            return this;
         }
-        if(this.__schema.aliases.length === 0) {
-            this.__schema.aliases.push(ARGUMENT_CONSTANTS.DEFAULT_ALIAS + this.__schema.name.charAt(0))
+        throw new Error("Has to be optional in order to be a flag");
+    }
+
+    alias(alias: string | string[]): this {
+        if (this.buildObject instanceof OptionalArgumentSchema) {
+            if (typeof alias === 'string') {
+                this.buildObject.aliases.push(alias);
+                return this;
+            }
+            this.buildObject.aliases = alias;
+            return this;
         }
-        return this.__schema;
+        throw new Error("Has to be optional in order to set alias");
+    }
+
+    build(): ArgumentSchema {
+        return this.buildObject;
     }
 }

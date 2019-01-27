@@ -26,6 +26,3 @@ export abstract class Schema {
     }
 }
 
-export abstract class PrefixSchema extends Schema {
-    prefix: string;
-}
