@@ -2,7 +2,6 @@ import {SchemaBuilder} from "./ArgumentSchemaBuilder";
 import {StringSchemaBuilder} from "../type/builder/StringBuilder";
 import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../ArgumentSchema";
 import {NumberSchemaBuilder} from "../type/builder/NumberBuilder";
-import {BooleanSchemaBuilder} from "../type/builder/BooleanBuilder";
 import {AnySchemaBuilder} from "../type/builder/AnyBuilder";
 
 class SchemaTypeChooserBuilder extends SchemaBuilder {
@@ -12,10 +11,6 @@ class SchemaTypeChooserBuilder extends SchemaBuilder {
 
     number(): NumberSchemaBuilder {
         return new NumberSchemaBuilder(this.buildObject)
-    }
-
-    boolean(): BooleanSchemaBuilder {
-        return new BooleanSchemaBuilder(this.buildObject);
     }
 
     any(): AnySchemaBuilder {
