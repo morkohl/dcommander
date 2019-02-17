@@ -7,21 +7,18 @@ export class SchemaBuilder extends Builder<ArgumentSchema> {
     }
 
     optional(): this {
-        this.buildObject = OptionalArgumentSchema.copyFromRequiredArgument(this.buildObject);
+        this.buildObject = OptionalArgumentSchema.copyFromRequiredArgument(this.buildObject)
         return this;
     }
 
-    prefix(prefix: string): this {
+    identifiers(identifiers: string[]): this {
         if (this.buildObject instanceof OptionalArgumentSchema) {
-            if (prefix.length === 0) {
-                throw new Error("Prefix cannot be an empty string");
+            if(identifiers.length === 0) {
+                throw new Error("Has to be optional to set identifiers")
             }
-            if (prefix.includes(' ')) {
-                throw new Error("Prefix cannot include a whitespace");
-            }
-            return this;
+            this.buildObject.identifiers = identifiers;
         }
-        throw new Error("Has to be optional in order to set prefix");
+        return this;
     }
 
     flag(): this {
@@ -32,19 +29,29 @@ export class SchemaBuilder extends Builder<ArgumentSchema> {
         throw new Error("Has to be optional in order to be a flag");
     }
 
-    alias(alias: string | string[]): this {
-        if (this.buildObject instanceof OptionalArgumentSchema) {
-            if (typeof alias === 'string') {
-                this.buildObject.aliases.push(alias);
-                return this;
+    numberOfArguments(num: string | number): this {
+        if(typeof num === 'string') {
+            const placeHolders = Object.keys(NARGS).map(key => NARGS[key as any]);
+            const index = placeHolders.indexOf(num);
+            if(index >= 0) {
+                this.buildObject.numArgs = placeHolders[index];
+            } else {
+                throw new Error(`Used an inexistant placeholder symbol: ${num}`)
             }
-            this.buildObject.aliases = alias;
-            return this;
         }
-        throw new Error("Has to be optional in order to set alias");
+        if(typeof num === 'number') {
+            this.buildObject.numArgs = num;
+        }
+        return this;
     }
 
     build(): ArgumentSchema {
         return this.buildObject;
     }
+}
+
+export enum NARGS {
+    AMBIGUOUS = '?',
+    ALL_OR_ZERO = '*',
+    ALL = '+'
 }

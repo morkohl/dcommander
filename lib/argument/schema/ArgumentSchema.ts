@@ -6,6 +6,7 @@ export abstract class ArgumentSchema extends Schema {
     readonly required: boolean;
     sanitize: (value: any) => any;
     type: Type;
+    numArgs: string | number;
 }
 
 export class RequiredArgumentSchema extends ArgumentSchema {
@@ -14,8 +15,7 @@ export class RequiredArgumentSchema extends ArgumentSchema {
 
 export class OptionalArgumentSchema extends ArgumentSchema {
     readonly required: boolean = false;
-    aliases: string[];
-    prefix: string;
+    identifiers: string[];
     isFlag: boolean;
 
     static copyFromRequiredArgument(from: RequiredArgumentSchema): OptionalArgumentSchema {
@@ -23,13 +23,7 @@ export class OptionalArgumentSchema extends ArgumentSchema {
         optionalArgument.isFlag = false;
         optionalArgument.sanitize = from.sanitize;
         optionalArgument.type = from.type;
-        optionalArgument.prefix = ARGUMENT_CONSTANTS.DEFAULT_PREFIX;
-        optionalArgument.aliases = [ARGUMENT_CONSTANTS.DEFAULT_ALIAS_PREFIX + from.name[0]];
+        optionalArgument.numArgs = from.numArgs;
         return optionalArgument;
     }
 }
-
-export const ARGUMENT_CONSTANTS = {
-    DEFAULT_PREFIX: '--',
-    DEFAULT_ALIAS_PREFIX: '-',
-};
