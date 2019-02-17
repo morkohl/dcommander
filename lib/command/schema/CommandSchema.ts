@@ -1,14 +1,14 @@
 import {Message, Guild, User} from 'discord.js';
 import {ArgumentSchema} from "../../argument/schema/ArgumentSchema";
 import {Argument} from "../../argument/Argument";
-import {PrefixSchema} from "../../schema/Schema";
 
-export class CommandSchema extends PrefixSchema {
+export class CommandSchema {
     name: string;
     execution: (instructions: CommandInstructions) => void;
     argumentSchema: ArgumentSchema[];
     cooldown: number;
     canExecute: (user: User) => boolean;
+    prefix: string;
 
     requiredArgs() {
         return this.argumentSchema.filter(schema => schema.required);
