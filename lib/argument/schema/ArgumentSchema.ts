@@ -18,12 +18,9 @@ export class OptionalArgumentSchema extends ArgumentSchema {
     identifiers: string[];
     isFlag: boolean;
 
-    static copyFromRequiredArgument(from: RequiredArgumentSchema): OptionalArgumentSchema {
-        const optionalArgument = new OptionalArgumentSchema(from.name);
-        optionalArgument.isFlag = false;
-        optionalArgument.sanitize = from.sanitize;
-        optionalArgument.type = from.type;
-        optionalArgument.numArgs = from.numArgs;
-        return optionalArgument;
+
+    constructor(argumentName: string, identifiers: string[]) {
+        super(argumentName);
+        this.identifiers = identifiers;
     }
 }

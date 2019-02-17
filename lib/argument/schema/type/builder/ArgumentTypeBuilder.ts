@@ -1,8 +1,8 @@
 import {Type} from "../BaseType";
-import {ArgumentSchema, OptionalArgumentSchema} from "../../ArgumentSchema";
-import {SchemaBuilder} from "../../builder/ArgumentSchemaBuilder";
+import {ArgumentBuilder} from "../../builder/ArgumentBuilder";
+import {ArgumentSchema} from "../../ArgumentSchema";
 
-export class SchemaTypeBuilder extends SchemaBuilder {
+export class ArgumentTypeBuilder extends ArgumentBuilder {
     constructor(schema: ArgumentSchema, type: Type) {
         super(schema);
         this.buildObject.type = type;
@@ -22,13 +22,6 @@ export class SchemaTypeBuilder extends SchemaBuilder {
             errFormatter: errFormatter
         });
         return this;
-    }
-
-    build(): ArgumentSchema {
-        if (this.buildObject instanceof OptionalArgumentSchema && this.buildObject.isFlag) {
-            throw new Error("Flag arguments can't have a type")
-        }
-        return super.build();
     }
 }
 

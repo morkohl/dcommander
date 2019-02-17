@@ -1,32 +1,38 @@
-import {SchemaBuilder} from "./ArgumentSchemaBuilder";
-import {StringSchemaBuilder} from "../type/builder/StringBuilder";
+import {ArgumentBuilder} from "./ArgumentBuilder";
 import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../ArgumentSchema";
-import {NumberSchemaBuilder} from "../type/builder/NumberBuilder";
-import {AnySchemaBuilder} from "../type/builder/AnyBuilder";
+import {StringArgumentBuilder} from "../type/builder/StringArgumentBuilder";
+import {NumberArgumentBuilder} from "../type/builder/NumberArgumentBuilder";
+import {AnyArgumentBuilder} from "../type/builder/AnyArgumentBuilder";
 
-class SchemaTypeChooserBuilder extends SchemaBuilder {
-    string(): StringSchemaBuilder {
-        return new StringSchemaBuilder(this.buildObject);
+export class ArgumentTypeSelectorBuilder extends ArgumentBuilder{
+    string(): StringArgumentBuilder {
+        return new StringArgumentBuilder(this.buildObject);
     }
 
-    number(): NumberSchemaBuilder {
-        return new NumberSchemaBuilder(this.buildObject)
+    number(): NumberArgumentBuilder {
+        return new NumberArgumentBuilder(this.buildObject)
     }
 
-    any(): AnySchemaBuilder {
-        return new AnySchemaBuilder(this.buildObject);
+    any(): AnyArgumentBuilder {
+        return new AnyArgumentBuilder(this.buildObject);
     }
 
     build(): ArgumentSchema {
-        if(this.buildObject instanceof OptionalArgumentSchema && this.buildObject.isFlag) {
+        if(this.buildObject.type) {
             return super.build();
         }
         return this.any().build();
     }
+
 }
 
-export function argument(argumentName: string) {
-    const schema = new RequiredArgumentSchema(argumentName);
-    return new SchemaTypeChooserBuilder(schema);
+export function argument(name: string) {
+    const schema = new RequiredArgumentSchema(name);
+    return new ArgumentTypeSelectorBuilder(schema);
 }
 
+export function optionalArgument(name: string, identifiers?: string[]) {
+    identifiers = identifiers ? identifiers : [`--${name}`, `-${name.charAt(0)}`];
+    const schema = new OptionalArgumentSchema(name, identifiers);
+    return new ArgumentTypeSelectorBuilder(schema)
+}

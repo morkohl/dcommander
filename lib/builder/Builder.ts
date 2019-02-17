@@ -1,9 +1,11 @@
-export abstract class Builder<T> {
+export class Builder<T> {
     protected buildObject: T;
 
     constructor(buildObject: T) {
         this.buildObject = buildObject;
     }
 
-    abstract build(): T;
+    build(): T {
+        return this.buildObject;
+    };
 }

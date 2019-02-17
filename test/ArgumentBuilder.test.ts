@@ -1,20 +1,19 @@
 import * as chai from 'chai';
-import {argument} from "../lib/argument/schema/builder/argument";
-import {AnySchemaBuilder} from "../lib/argument/schema/type/builder/AnyBuilder";
-import {NumberSchemaBuilder} from "../lib/argument/schema/type/builder/NumberBuilder";
-import {StringSchemaBuilder} from "../lib/argument/schema/type/builder/StringBuilder";
+import {argument, optionalArgument} from "../lib/argument/schema/builder/argument";
+import {AnyArgumentBuilder} from "../lib/argument/schema/type/builder/AnyArgumentBuilder";
+import {NumberArgumentBuilder} from "../lib/argument/schema/type/builder/NumberArgumentBuilder";
+import {StringArgumentBuilder} from "../lib/argument/schema/type/builder/StringArgumentBuilder";
 
 import {AnyType} from "../lib/argument/schema/type/AnyType";
 import {NumberType} from "../lib/argument/schema/type/NumberType";
 import {StringType} from "../lib/argument/schema/type/StringType";
 
 import {OptionalArgumentSchema} from "../lib/argument/schema/ArgumentSchema";
-import {NARGS} from "../lib/argument/schema/builder/ArgumentSchemaBuilder";
+import {NARGS} from "../lib/argument/schema/builder/ArgumentBuilder";
 
 const expect = chai.expect;
 
 const testArgumentName = "test";
-const testPrefix = 's!';
 
 describe('ArgumentSchema Test', () => {
     describe('Required Arguments', () => {
@@ -68,34 +67,39 @@ describe('ArgumentSchema Test', () => {
 
     describe('Optional Arguments', () => {
         it('should be set as optional', () => {
-            const builder = argument(testArgumentName).optional();
+            const builder = optionalArgument(testArgumentName);
             const schema = builder.build();
             expect(schema.required).to.equal(false);
         });
 
-        it('should be an OptionalArgumentSchema if optional', () => {
-            const builder = argument(testArgumentName).optional();
-            const schema = builder.build();
+        it('should set identifiers and default identifiers', () => {
+            let identifiers = ["--abc", "-a"];
+            const builder = optionalArgument(testArgumentName, identifiers);
+            const builderWithDefaults = optionalArgument(testArgumentName);
+            let schema = builder.build();
+            let schemaWithDefaults = builderWithDefaults.build();
 
+            expect(schema.required).to.be.false;
             expect(schema).to.be.an.instanceOf(OptionalArgumentSchema);
+            expect(schemaWithDefaults.required).to.be.false;
+            expect(schemaWithDefaults).to.be.an.instanceOf(OptionalArgumentSchema);
+
+            let schemaIdentifiers = (<OptionalArgumentSchema>schema).identifiers;
+            let schemaWithDefaultsIdentifiers = (<OptionalArgumentSchema>schemaWithDefaults).identifiers;
+
+            const defaultsResult = [`--${testArgumentName}`, `-${testArgumentName.charAt(0)}`];
+
+            expect(schemaIdentifiers).to.be.an('array').and.equal(identifiers);
+            expect(schemaWithDefaultsIdentifiers).to.be.an('array').and.deep.equal(defaultsResult);
         });
 
         it('should set flag to true if chosen so', () => {
-            const builder = argument(testArgumentName).optional().flag();
+            const builder = optionalArgument(testArgumentName).flag();
             const schema = builder.build();
 
             expect(schema.required).to.be.false;
             expect(schema).to.be.an.instanceOf(OptionalArgumentSchema);
             expect((<OptionalArgumentSchema>schema).isFlag).to.be.true;
-
-        });
-
-        it('should set identifiers if optional', () => {
-            const identifiers = ['--test', '-t'];
-            const builder = argument(testArgumentName).optional().identifiers(identifiers);
-            const schema = <OptionalArgumentSchema>builder.build();
-
-            expect(schema.identifiers).to.equal(identifiers);
         });
     });
 
@@ -103,7 +107,7 @@ describe('ArgumentSchema Test', () => {
     describe('Any type', () => {
         it('should be an any type builder', () => {
             const builder = argument(testArgumentName).any();
-            expect(builder).to.be.an.instanceOf(AnySchemaBuilder);
+            expect(builder).to.be.an.instanceOf(AnyArgumentBuilder);
 
             const schema = builder.build();
             expect(schema.type).to.be.an.instanceOf(AnyType);
@@ -119,7 +123,7 @@ describe('ArgumentSchema Test', () => {
     describe('Number type', () => {
         it('should be a NumberTypeBuilder if number was chosen', () => {
             const builder = argument(testArgumentName).number();
-            expect(builder).to.be.an.instanceOf(NumberSchemaBuilder);
+            expect(builder).to.be.an.instanceOf(NumberArgumentBuilder);
 
             const schema = builder.build();
             expect(schema.type).to.be.an.instanceOf(NumberType);
@@ -129,7 +133,7 @@ describe('ArgumentSchema Test', () => {
     describe('String type', () => {
         it('should be an any type builder', () => {
             const builder = argument(testArgumentName).string();
-            expect(builder).to.be.an.instanceOf(StringSchemaBuilder);
+            expect(builder).to.be.an.instanceOf(StringArgumentBuilder);
 
             const schema = builder.build();
             expect(schema.type).to.be.an.instanceOf(StringType);
