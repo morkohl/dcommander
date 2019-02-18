@@ -9,10 +9,6 @@ export class CommandSchema extends Schema{
     cooldown: number;
     canExecute: (user: User) => boolean;
     prefix: string;
-
-    requiredArgs() {
-        return this.argumentSchema.filter(schema => schema.required);
-    }
 }
 
 export interface CommandInstructions {
