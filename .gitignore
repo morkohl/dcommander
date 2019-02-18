@@ -1,3 +1,4 @@
 /node_modules
 /.idea
-/lib/**/*.js
+/lib/**/**.js
+/test/type.js
