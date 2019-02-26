@@ -1,7 +1,6 @@
 import * as chai from 'chai';
-import {NumberType} from "../lib/argument/schema/type/NumberType";
-import {StringType} from "../lib/argument/schema/type/StringType";
-
+import {NumberType} from "../src/argument/schema/type/NumberType";
+import {StringType} from "../src/argument/schema/type/StringType";
 
 const expect = chai.expect;
 
