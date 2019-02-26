@@ -1,8 +1,8 @@
 import * as chai from 'chai';
-import {command} from "../lib/command/builder/commandBuilder";
-import {CommandInstructions} from "../lib/command/schema/CommandSchema";
+import {command} from "../src/command/builder/commandBuilder";
+import {CommandInstructions} from "../src/command/schema/CommandSchema";
 import {User} from "discord.js";
-import {argument, optionalArgument} from "../lib/argument/schema/builder/argument";
+import {argument, optionalArgument} from "../src/argument/schema/builder/argument";
 
 const expect = chai.expect;
 
@@ -27,7 +27,9 @@ describe('CommandBuilder Test', () => {
         expect(commandSchema.execution.toString()).to.eq(testExec.toString());
         expect(commandSchema.canExecute.toString()).to.eq(testCanExec.toString());
         expect(commandSchema.name).to.eq('test');
-        expect(commandSchema.argumentSchema.length).to.eq(commandArgs.length);
+        expect(commandSchema.argumentSchema.length).to.eq(1);
+        expect(commandSchema.argumentSchema[0].name).to.equal('test');
+        expect(commandSchema.optionalArgumentSchema[0].name).to.equal("test1")
     });
 
     it('should throw if duplicate argument names are supplied', () => {
@@ -42,9 +44,6 @@ describe('CommandBuilder Test', () => {
         const commandBuilder = command('test')
             .execute(testExec)
             .arguments(commandArgs);
-        const build = function () {
-            commandBuilder.build();
-        };
-        expect(build).to.throw();
+        expect(() => commandBuilder.build()).to.throw();
     });
 });

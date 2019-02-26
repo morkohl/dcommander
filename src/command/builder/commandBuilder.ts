@@ -1,5 +1,5 @@
 import {CommandSchema, CommandInstructions} from "../schema/CommandSchema";
-import {ArgumentSchema} from "../../argument/schema/ArgumentSchema";
+import {ArgumentSchema, OptionalArgumentSchema} from "../../argument/schema/ArgumentSchema";
 import {User} from "discord.js";
 import {Builder} from "../../builder/Builder";
 import {ArgumentBuilder} from "../../argument/schema/builder/ArgumentBuilder";
@@ -61,7 +61,12 @@ export class CommandBuilder extends Builder<CommandSchema> {
             if (Object.keys(argumentNameCount).filter((countItem: string) => argumentNameCount[countItem] > 1).length > 0) {
                 throw new Error("CommandSchema cannot have multiple argumentSchema with the same name");
             }
-            this.buildObject.argumentSchema = builtArguments;
+
+            const requiredArguments = builtArguments.filter(argument => argument.required);
+            const optionalArguments = builtArguments.filter(argument => !argument.required).map(argument => <OptionalArgumentSchema>argument);
+
+            this.buildObject.argumentSchema = requiredArguments;
+            this.buildObject.optionalArgumentSchema = optionalArguments;
         }
 
         if (!this.buildObject.execution) {
