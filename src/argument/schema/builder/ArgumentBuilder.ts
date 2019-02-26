@@ -25,6 +25,14 @@ export class ArgumentBuilder extends Builder<ArgumentSchema> {
         }
         return this;
     }
+
+    build(): ArgumentSchema {
+        if(!this.buildObject.numArgs) {
+            //set default values
+            this.buildObject.numArgs = 1;
+        }
+        return super.build();
+    }
 }
 
 export enum NARGS {
