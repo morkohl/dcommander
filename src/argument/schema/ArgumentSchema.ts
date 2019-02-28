@@ -6,6 +6,7 @@ export abstract class ArgumentSchema extends Schema {
     readonly required: boolean;
     sanitize: (value: any) => any;
     type: Type;
+    default: any;
     numArgs: string | number;
 }
 

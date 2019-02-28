@@ -21,8 +21,20 @@ export class ArgumentBuilder extends Builder<ArgumentSchema> {
             }
         }
         if (typeof num === 'number') {
+            if(num < 0) {
+                throw new Error(`${num} needs to be greater than zero.`);
+            }
             this.buildObject.numArgs = num;
+
         }
+        return this;
+    }
+
+    default(defaultValue: any): this {
+        if(this.buildObject.numArgs.toString() !== NARGS.ALL_OR_DEFAULT) {
+            throw new Error(`Cannot set default value for ${this.buildObject.name} since its number of arguments ${this.buildObject.numArgs} don\'t qualify.`)
+        }
+        this.buildObject.default = defaultValue;
         return this;
     }
 
@@ -36,7 +48,6 @@ export class ArgumentBuilder extends Builder<ArgumentSchema> {
 }
 
 export enum NARGS {
-    AMBIGUOUS = '?',
-    ALL_OR_ZERO = '*',
-    ALL = '+'
+    ALL_OR_DEFAULT = '?',
+    ALL_OR_ONE = '+'
 }

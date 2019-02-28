@@ -26,7 +26,7 @@ describe('ArgumentSchema Test', () => {
         const builder = argument(testArgumentName).numberOfArguments('?');
         const schema = builder.build();
 
-        expect(schema.numArgs).to.equal(NARGS.AMBIGUOUS);
+        expect(schema.numArgs).to.equal(NARGS.ALL_OR_DEFAULT);
     });
 
     it('should throw an error if an inexistant symbol was chosen for number of arguments', () => {
@@ -61,6 +61,17 @@ describe('ArgumentSchema Test', () => {
 
     it('should throw an error if a property gets set twice', () => {
         expect(() => argument(testArgumentName).number().max(1).max(2)).to.throw()
+    });
+
+    it('should set a default value only if numberOfArguments field equals \'?\'', () => {
+        const builder = argument(testArgumentName).numberOfArguments(NARGS.ALL_OR_DEFAULT).default("test");
+        const schema = builder.build();
+
+        expect(schema.default).to.equal("test");
+    });
+
+    it('should throw if a default value is chosen and numberOfArguments field doesn\'t equal \'?\'', () => {
+        expect(() => argument(testArgumentName).numberOfArguments(2).default("test")).to.throw()
     });
 
     describe('Optional Arguments', () => {
@@ -135,7 +146,6 @@ describe('ArgumentSchema Test', () => {
 
             const schema = builder.build();
             expect(schema.type).to.be.an.instanceOf(StringType);
-
         });
     });
 });
