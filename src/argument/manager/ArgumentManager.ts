@@ -65,7 +65,7 @@ export class ArgumentParser {
             return valueIndexResult.flagValue
         } else {
             if (valueIndexResult.from === valueIndexResult.to) {
-                [this.inputArguments[valueIndexResult.from]]
+                return [this.inputArguments[valueIndexResult.from]]
             }
             return this.inputArguments.slice(valueIndexResult.from, valueIndexResult.to);
         }
