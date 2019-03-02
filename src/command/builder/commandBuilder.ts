@@ -53,6 +53,10 @@ export class CommandBuilder extends Builder<CommandSchema> {
     }
 
     build(): CommandSchema {
+        if (!this.buildObject.execution) {
+            throw new Error("No execution for command set");
+        }
+
         if(this.schemaBuilders) {
             const builtArguments: ArgumentSchema[] = this.schemaBuilders.map(builder => builder.build());
             //@ts-ignore
@@ -67,10 +71,6 @@ export class CommandBuilder extends Builder<CommandSchema> {
 
             this.buildObject.argumentSchema = requiredArguments;
             this.buildObject.optionalArgumentSchema = optionalArguments;
-        }
-
-        if (!this.buildObject.execution) {
-            throw new Error("No execution for command set");
         }
         return this.buildObject;
     }
