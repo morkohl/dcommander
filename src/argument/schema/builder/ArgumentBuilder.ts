@@ -49,5 +49,5 @@ export class ArgumentBuilder extends Builder<ArgumentSchema> {
 
 export enum NARGS {
     ALL_OR_DEFAULT = '?',
-    ALL_OR_ONE = '+'
+    AT_LEAST_ONE = '+'
 }
