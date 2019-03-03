@@ -1,7 +1,7 @@
 import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../schema/ArgumentSchema";
 import {NARGS} from "../schema/builder/ArgumentBuilder";
 import {Argument} from "../Argument";
-import {OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "./ArgumentValueHolder";
+import {ArgumentValueHolder, OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "./ArgumentValueHolder";
 import {OptionalArgumentValueHolders, RequiredArgumentValueHolders} from "./ArgumentValueHolders";
 
 export class ArgumentParser {
@@ -40,8 +40,31 @@ export class ArgumentParser {
             }
         }
 
-        console.log(this.requiredValueHolders.argumentSchemaValueHolders);
-        console.log(this.optionalValueHolders.argumentSchemaValueHolders);
+        this.checkAllArgsSupplied(this.currentRequired, this.currentOptional);
+
+        console.log("required values", this.requiredValueHolders.argumentSchemaValueHolders.map(valueHolder => valueHolder.values));
+        console.log("optional values", this.optionalValueHolders.argumentSchemaValueHolders.map(valueHolder => valueHolder.values));
+    }
+
+    private checkAllArgsSupplied(currentRequired: RequiredArgumentValueHolder | null, currentOptional: OptionalArgumentValueHolder | null): void {
+        this.checkIfAllArgsWereSuppliedTo(currentRequired);
+        this.checkIfAllArgsWereSuppliedTo(currentOptional);
+    }
+
+    private checkIfAllArgsWereSuppliedTo(valueHolder: RequiredArgumentValueHolder | OptionalArgumentValueHolder | null): void {
+        if (valueHolder) {
+            if (valueHolder.numberOfArgumentsAreAmbiguous()) {
+                if (valueHolder.numberOfArgumentsAreAmbiguousSpecific(NARGS.AT_LEAST_ONE)) {
+                    if (valueHolder.values.length < 2) {
+                        throw new Error("Expected at least one argument");
+                    }
+                }
+            } else {
+                if (!valueHolder.hasAllArgsSupplied()) {
+                    throw new Error(`Expected ${valueHolder.schema.numArgs} arguments but got ${valueHolder.values.length}`)
+                }
+            }
+        }
     }
 
     isIdentifier(token: string): boolean {

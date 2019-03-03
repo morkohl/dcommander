@@ -23,7 +23,7 @@ describe('Test', () => {
        const valueHolders = new RequiredArgumentValueHolders();
        let valueHolder = new RequiredArgumentValueHolder(testArgumentRequired);
 
-       valueHolders.add(new RequiredArgumentValueHolder(testArgumentRequired));
+       valueHolders.add(valueHolder);
 
        expect(valueHolders.argumentSchemaValueHolders[0].values.length).to.equal(0);
 
