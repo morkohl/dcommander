@@ -26,12 +26,12 @@ export class ArgumentTypeSelectorBuilder extends ArgumentBuilder{
 
 }
 
-export function argument(name: string) {
+export function argument(name: string): ArgumentTypeSelectorBuilder {
     const schema = new RequiredArgumentSchema(name);
     return new ArgumentTypeSelectorBuilder(schema);
 }
 
-export function optionalArgument(name: string, identifiers?: string[]) {
+export function optionalArgument(name: string, identifiers?: string[]): ArgumentTypeSelectorBuilder {
     identifiers = identifiers ? identifiers : [`--${name}`, `-${name.charAt(0)}`];
     const schema = new OptionalArgumentSchema(name, identifiers);
     return new ArgumentTypeSelectorBuilder(schema)

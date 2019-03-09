@@ -1,7 +1,6 @@
-import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../schema/ArgumentSchema";
+import {OptionalArgumentSchema, RequiredArgumentSchema} from "../schema/ArgumentSchema";
 import {NARGS} from "../schema/builder/ArgumentBuilder";
-import {Argument} from "../Argument";
-import {ArgumentValueHolder, OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "./ArgumentValueHolder";
+import {OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "./ArgumentValueHolder";
 import {OptionalArgumentValueHolders, RequiredArgumentValueHolders} from "./ArgumentValueHolders";
 
 export class ArgumentParser {
@@ -12,7 +11,6 @@ export class ArgumentParser {
     private currentRequired: RequiredArgumentValueHolder | null;
     private currentOptional: OptionalArgumentValueHolder | null;
 
-    private outputArguments: Argument[];
     private requiredValueHolders: RequiredArgumentValueHolders;
     private optionalValueHolders: OptionalArgumentValueHolders;
 
@@ -21,7 +19,7 @@ export class ArgumentParser {
         this.optionalSchemas = optionalSchemas;
     }
 
-    parse(inputArguments: string[]) {
+    parse(inputArguments: string[]): any {
         this.initNewParse(inputArguments);
 
         let inputArgument: string;
@@ -42,8 +40,7 @@ export class ArgumentParser {
 
         this.checkAllArgsSupplied(this.currentRequired, this.currentOptional);
 
-        console.log("required values", this.requiredValueHolders.argumentSchemaValueHolders.map(valueHolder => valueHolder.values));
-        console.log("optional values", this.optionalValueHolders.argumentSchemaValueHolders.map(valueHolder => valueHolder.values));
+        return this.requiredValueHolders.argumentSchemaValueHolders.concat(this.optionalValueHolders.argumentSchemaValueHolders);
     }
 
     private checkAllArgsSupplied(currentRequired: RequiredArgumentValueHolder | null, currentOptional: OptionalArgumentValueHolder | null): void {
@@ -55,7 +52,7 @@ export class ArgumentParser {
         if (valueHolder) {
             if (valueHolder.numberOfArgumentsAreAmbiguous()) {
                 if (valueHolder.numberOfArgumentsAreAmbiguousSpecific(NARGS.AT_LEAST_ONE)) {
-                    if (valueHolder.values.length < 2) {
+                    if (valueHolder.values.length === 0) {
                         throw new Error("Expected at least one argument");
                     }
                 }
@@ -88,7 +85,6 @@ export class ArgumentParser {
         this.currentOptional = null;
         this.currentRequired = null;
 
-        this.outputArguments = [];
         this.requiredValueHolders = new RequiredArgumentValueHolders();
         this.optionalValueHolders = new OptionalArgumentValueHolders();
 
@@ -134,6 +130,16 @@ export class ArgumentParser {
         }
     }
 
+    private addToCurrentOptional(token: string): void {
+        if (this.currentOptional) {
+            this.currentOptional = this.optionalValueHolders.updateValueHolderValues(this.currentOptional, token);
+
+            if(this.currentOptional.isFull()) {
+                this.currentOptional = null;
+            }
+        }
+    }
+
     private handleIfCurrentRequiredSet(token: string, currentRequired: RequiredArgumentValueHolder) {
         this.currentRequired = currentRequired;
 
@@ -156,12 +162,6 @@ export class ArgumentParser {
             this.requiredValueHolders.add(requiredValueHolder);
         } else {
             throw new Error("Too many arguments");
-        }
-    }
-
-    private addToCurrentOptional(token: string): void {
-        if (this.currentOptional) {
-            this.currentOptional = this.optionalValueHolders.updateValueHolderValues(this.currentOptional, token)
         }
     }
 

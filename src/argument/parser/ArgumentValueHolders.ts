@@ -9,7 +9,6 @@ export abstract class ArgumentValueHolders<S extends ArgumentSchema, VH extends 
     }
 
     updateValueHolderValues(valueHolder: VH, value: string): VH {
-        // @ts-ignore
         const index = this.argumentSchemaValueHolders.indexOf(valueHolder);
         if(index < 0) {
             throw new Error("Value Holder does not exist in the collection.")
