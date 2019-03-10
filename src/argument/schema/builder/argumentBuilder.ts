@@ -34,7 +34,7 @@ export class ArgumentBuilder extends Builder<ArgumentSchema> {
         if(this.buildObject.numArgs.toString() !== NARGS.ALL_OR_DEFAULT) {
             throw new Error(`Cannot set default value for ${this.buildObject.name} since its number of arguments ${this.buildObject.numArgs} don\'t qualify.`)
         }
-        this.buildObject.default = defaultValue;
+        this.buildObject.defaultValue = defaultValue;
         return this;
     }
 

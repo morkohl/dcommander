@@ -31,7 +31,7 @@ describe('ArgumentSchema Test', () => {
         expect(() => argument(testArgumentName).numberOfArguments('123123213123asdjajsdjasd')).to.throw;
     });
 
-    it('should set a default value for number of arguments', () => {
+    it('should set a defaultValue value for number of arguments', () => {
         const builder = argument(testArgumentName);
         const schema = builder.build();
 
@@ -61,14 +61,14 @@ describe('ArgumentSchema Test', () => {
         expect(() => argument(testArgumentName).number().max(1).max(2)).to.throw()
     });
 
-    it('should set a default value only if numberOfArguments field eqs \'?\'', () => {
+    it('should set a defaultValue value only if numberOfArguments field eqs \'?\'', () => {
         const builder = argument(testArgumentName).numberOfArguments(NARGS.ALL_OR_DEFAULT).default("test");
         const schema = builder.build();
 
-        expect(schema.default).to.eq("test");
+        expect(schema.defaultValue).to.eq("test");
     });
 
-    it('should throw if a default value is chosen and numberOfArguments field doesn\'t eq \'?\'', () => {
+    it('should throw if a defaultValue value is chosen and numberOfArguments field doesn\'t eq \'?\'', () => {
         expect(() => argument(testArgumentName).numberOfArguments(2).default("test")).to.throw()
     });
 
@@ -79,7 +79,7 @@ describe('ArgumentSchema Test', () => {
             expect(schema.required).to.eq(false);
         });
 
-        it('should set identifiers and default identifiers', () => {
+        it('should set identifiers and defaultValue identifiers', () => {
             let identifiers = ["--abc", "-a"];
             const builder = optionalArgument(testArgumentName, identifiers);
             const builderWithDefaults = optionalArgument(testArgumentName);

@@ -20,7 +20,7 @@ export class ArgumentParser {
         this.optionalSchemas = optionalSchemas;
     }
 
-    parse(inputArguments: string[]): any {
+    parse(inputArguments: string[]): ArgumentParseResult[] {
         this.initNewParse(inputArguments);
 
         let inputArgument: string;

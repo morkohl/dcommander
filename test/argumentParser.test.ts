@@ -7,7 +7,7 @@ import {OptionalArgumentSchema, RequiredArgumentSchema} from "../src/argument/sc
 
 const expect = chai.expect;
 
-//todo write and implement flags and default values
+//todo write and implement flags and defaultValue values
 
 describe('Argument ArgumentParser Test', () => {
     const testArgumentBuilderRequired = argument("requiredTestArgument1");
@@ -213,6 +213,7 @@ describe('Argument ArgumentParser Test', () => {
 
             const anotherResultReqArg = anotherResult[0];
             expect(anotherResultReqArg.values.length).to.eq(0);
+            expect(anotherResultReqArg.defaultValue).to.eq(anotherResultReqArg.schema.defaultValue)
         });
 
         it("should parse ambiguous number of arguments (all or one) for a optional argument", () => {

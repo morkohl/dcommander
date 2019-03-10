@@ -10,8 +10,8 @@ export abstract class ArgumentValueHolder<S extends ArgumentSchema> {
     protected constructor(schema: S) {
         this.schema = schema;
         this.values = [];
-        if (schema.default) {
-            this.constantValue = schema.default;
+        if (schema.defaultValue) {
+            this.constantValue = schema.defaultValue;
         }
     }
 
