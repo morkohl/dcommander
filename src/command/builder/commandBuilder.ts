@@ -1,8 +1,8 @@
-import {CommandSchema, CommandInstructions} from "../schema/CommandSchema";
-import {ArgumentSchema, OptionalArgumentSchema} from "../../argument/schema/ArgumentSchema";
+import {CommandSchema, CommandInstructions} from "../schema/commandSchema";
+import {ArgumentSchema, OptionalArgumentSchema} from "../../argument/schema/argumentSchema";
 import {User} from "discord.js";
-import {Builder} from "../../builder/Builder";
-import {ArgumentBuilder} from "../../argument/schema/builder/ArgumentBuilder";
+import {Builder} from "../../builder/builder";
+import {ArgumentBuilder} from "../../argument/schema/builder/argumentBuilder";
 
 export class CommandBuilder extends Builder<CommandSchema> {
     schemaBuilders: ArgumentBuilder[];

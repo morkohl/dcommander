@@ -1,6 +1,6 @@
-import {StringType} from "../StringType";
-import {ArgumentSchema} from "../../ArgumentSchema";
-import {ArgumentTypeBuilder} from "./ArgumentTypeBuilder";
+import {ArgumentSchema} from "../../argumentSchema";
+import {ArgumentTypeBuilder} from "./argumentTypeBuilder";
+import {StringType} from "../../type/stringType";
 
 export class StringArgumentBuilder extends ArgumentTypeBuilder {
     constructor(schema: ArgumentSchema) {

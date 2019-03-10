@@ -1,15 +1,13 @@
 import * as chai from 'chai';
 import {argument, optionalArgument} from "../src/argument/schema/builder/argument";
-import {AnyArgumentBuilder} from "../src/argument/schema/type/builder/AnyArgumentBuilder";
-import {NumberArgumentBuilder} from "../src/argument/schema/type/builder/NumberArgumentBuilder";
-import {StringArgumentBuilder} from "../src/argument/schema/type/builder/StringArgumentBuilder";
-
-import {AnyType} from "../src/argument/schema/type/AnyType";
-import {NumberType} from "../src/argument/schema/type/NumberType";
-import {StringType} from "../src/argument/schema/type/StringType";
-
-import {OptionalArgumentSchema} from "../src/argument/schema/ArgumentSchema";
-import {NARGS} from "../src/argument/schema/builder/ArgumentBuilder";
+import {NARGS} from "../src/argument/schema/builder/argumentBuilder";
+import {OptionalArgumentSchema} from "../src/argument/schema/argumentSchema";
+import {AnyType} from "../src/argument/schema/type/anyType";
+import {AnyArgumentBuilder} from "../src/argument/schema/builder/typeBuilder/anyArgumentBuilder";
+import {NumberArgumentBuilder} from "../src/argument/schema/builder/typeBuilder/numberArgumentBuilder";
+import {NumberType} from "../src/argument/schema/type/numberType";
+import {StringArgumentBuilder} from "../src/argument/schema/builder/typeBuilder/stringArgumentBuilder";
+import {StringType} from "../src/argument/schema/type/stringType";
 
 const expect = chai.expect;
 
@@ -19,14 +17,14 @@ describe('ArgumentSchema Test', () => {
     it('should have a set name', () => {
         const builder = argument(testArgumentName);
         const schema = builder.build();
-        expect(schema.name).to.equal(testArgumentName);
+        expect(schema.name).to.eq(testArgumentName);
     });
 
     it('should set placeholder symbols for number of arguments', () => {
         const builder = argument(testArgumentName).numberOfArguments('?');
         const schema = builder.build();
 
-        expect(schema.numArgs).to.equal(NARGS.ALL_OR_DEFAULT);
+        expect(schema.numArgs).to.eq(NARGS.ALL_OR_DEFAULT);
     });
 
     it('should throw an error if an inexistant symbol was chosen for number of arguments', () => {
@@ -37,7 +35,7 @@ describe('ArgumentSchema Test', () => {
         const builder = argument(testArgumentName);
         const schema = builder.build();
 
-        expect(schema.numArgs).to.equal(1);
+        expect(schema.numArgs).to.eq(1);
     });
 
     it('should set number of arguments if a number was given', () => {
@@ -45,12 +43,12 @@ describe('ArgumentSchema Test', () => {
         const builder = argument(testArgumentName).numberOfArguments(number);
         const schema = builder.build();
 
-        expect(schema.numArgs).to.equal(number)
+        expect(schema.numArgs).to.eq(number)
     });
 
     it('should be allowed to have multiple validators', () => {
         expect(() => argument(testArgumentName).number().max(1).min(0).condition((value: any) => value * 2 < 1)).to.not.throw;
-        expect(argument(testArgumentName).number().max(1).min(0).condition((value: any) => value * 2 < 1).build().validators.length).to.equal(3);
+        expect(argument(testArgumentName).number().max(1).min(0).condition((value: any) => value * 2 < 1).build().validators.length).to.eq(3);
     });
 
     it('should set sanitization', () => {
@@ -63,14 +61,14 @@ describe('ArgumentSchema Test', () => {
         expect(() => argument(testArgumentName).number().max(1).max(2)).to.throw()
     });
 
-    it('should set a default value only if numberOfArguments field equals \'?\'', () => {
+    it('should set a default value only if numberOfArguments field eqs \'?\'', () => {
         const builder = argument(testArgumentName).numberOfArguments(NARGS.ALL_OR_DEFAULT).default("test");
         const schema = builder.build();
 
-        expect(schema.default).to.equal("test");
+        expect(schema.default).to.eq("test");
     });
 
-    it('should throw if a default value is chosen and numberOfArguments field doesn\'t equal \'?\'', () => {
+    it('should throw if a default value is chosen and numberOfArguments field doesn\'t eq \'?\'', () => {
         expect(() => argument(testArgumentName).numberOfArguments(2).default("test")).to.throw()
     });
 
@@ -78,7 +76,7 @@ describe('ArgumentSchema Test', () => {
         it('should be set as optional', () => {
             const builder = optionalArgument(testArgumentName);
             const schema = builder.build();
-            expect(schema.required).to.equal(false);
+            expect(schema.required).to.eq(false);
         });
 
         it('should set identifiers and default identifiers', () => {
@@ -98,8 +96,8 @@ describe('ArgumentSchema Test', () => {
 
             const defaultsResult = [`--${testArgumentName}`, `-${testArgumentName.charAt(0)}`];
 
-            expect(schemaIdentifiers).to.be.an('array').and.equal(identifiers);
-            expect(schemaWithDefaultsIdentifiers).to.be.an('array').and.deep.equal(defaultsResult);
+            expect(schemaIdentifiers).to.be.an('array').and.eq(identifiers);
+            expect(schemaWithDefaultsIdentifiers).to.be.an('array').and.deep.eq(defaultsResult);
         });
 
         it('should set flag to true if chosen so', () => {

@@ -1,15 +1,15 @@
-import {Validator} from "../argument/schema/builder/validator/Validator";
+import {ValueValidator} from "../argument/validation/valueValidator";
 
 export abstract class Schema {
     name: string;
-    validators: Validator[];
+    validators: ValueValidator[];
 
     constructor(argumentName: string) {
         this.name = argumentName;
         this.validators = [];
     }
 
-    addValidator(validator: Validator) {
+    addValidator(validator: ValueValidator) {
         if (this.validatorsInclude(validator.isAcceptable)) {
             throw new Error(`${validator.isAcceptable.name} cannot be included into validators more than once.`);
         }

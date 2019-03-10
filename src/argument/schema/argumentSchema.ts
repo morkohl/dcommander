@@ -1,5 +1,5 @@
-import {Type} from "./type/BaseType";
-import {Schema} from "../../schema/Schema";
+import {Type} from "./type/type";
+import {Schema} from "../../schema/schema";
 
 
 export abstract class ArgumentSchema extends Schema {
@@ -18,7 +18,6 @@ export class OptionalArgumentSchema extends ArgumentSchema {
     readonly required: boolean = false;
     identifiers: string[];
     isFlag: boolean;
-
 
     constructor(argumentName: string, identifiers: string[]) {
         super(argumentName);

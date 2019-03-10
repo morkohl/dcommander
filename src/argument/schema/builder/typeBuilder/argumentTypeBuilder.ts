@@ -1,6 +1,6 @@
-import {Type} from "../BaseType";
-import {ArgumentBuilder} from "../../builder/ArgumentBuilder";
-import {ArgumentSchema} from "../../ArgumentSchema";
+import {ArgumentBuilder} from "../../builder/argumentBuilder";
+import {ArgumentSchema} from "../../argumentSchema";
+import {Type} from "../../type/type";
 
 export class ArgumentTypeBuilder extends ArgumentBuilder {
     constructor(schema: ArgumentSchema, type: Type) {

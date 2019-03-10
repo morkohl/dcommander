@@ -1,4 +1,4 @@
-import {Type} from "./BaseType";
+import {Type} from "./type";
 
 export class AnyType implements Type {
     is(value: any): boolean {

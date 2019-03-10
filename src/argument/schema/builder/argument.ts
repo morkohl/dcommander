@@ -1,8 +1,8 @@
-import {ArgumentBuilder} from "./ArgumentBuilder";
-import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../ArgumentSchema";
-import {StringArgumentBuilder} from "../type/builder/StringArgumentBuilder";
-import {NumberArgumentBuilder} from "../type/builder/NumberArgumentBuilder";
-import {AnyArgumentBuilder} from "../type/builder/AnyArgumentBuilder";
+import {ArgumentBuilder} from "./argumentBuilder";
+import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../argumentSchema";
+import {StringArgumentBuilder} from "./typeBuilder/stringArgumentBuilder";
+import {NumberArgumentBuilder} from "./typeBuilder/numberArgumentBuilder";
+import {AnyArgumentBuilder} from "./typeBuilder/anyArgumentBuilder";
 
 export class ArgumentTypeSelectorBuilder extends ArgumentBuilder{
     string(): StringArgumentBuilder {

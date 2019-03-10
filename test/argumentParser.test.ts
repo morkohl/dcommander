@@ -1,14 +1,15 @@
 import * as chai from 'chai';
 import {argument, optionalArgument} from "../src/argument/schema/builder/argument";
-import {OptionalArgumentSchema, RequiredArgumentSchema} from "../src/argument/schema/ArgumentSchema";
-import {ArgumentParser} from "../src/argument/parser/ArgumentParser";
-import {NARGS} from "../src/argument/schema/builder/ArgumentBuilder";
+import {ArgumentParser} from "../src/argument/parser/argumentParser";
+import {NARGS} from "../src/argument/schema/builder/argumentBuilder";
+import {OptionalArgumentSchema, RequiredArgumentSchema} from "../src/argument/schema/argumentSchema";
+
 
 const expect = chai.expect;
 
 //todo write and implement flags and default values
 
-describe('Argument Parser Test', () => {
+describe('Argument ArgumentParser Test', () => {
     const testArgumentBuilderRequired = argument("requiredTestArgument1");
     const testArgumentRequired = testArgumentBuilderRequired.build();
 
@@ -64,7 +65,7 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
             const result: OptionalArgumentSchema = parser.getOptionalForIdentifier(testArgumentOptionalString.identifiers[0]);
 
-            expect(result).to.deep.equal(testArgumentOptionalString);
+            expect(result).to.deep.eq(testArgumentOptionalString);
         });
 
         it("should throw an error if no valid identifier was provided", () => {
@@ -79,39 +80,39 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
             const result = parser.parse(["xyz", "--number", "1"]);
 
-            expect(result.length).to.equal(2);
+            expect(result.length).to.eq(2);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.schema).to.deep.equal(testArgumentRequired);
-            expect(resultReqArg.values.length).to.equal(1);
-            expect(resultReqArg.values).to.deep.equal(["xyz"]);
+            expect(resultReqArg.schema).to.deep.eq(testArgumentRequired);
+            expect(resultReqArg.values.length).to.eq(1);
+            expect(resultReqArg.values).to.deep.eq(["xyz"]);
 
             const resultOptArg = result[1];
-            expect(resultOptArg.schema).to.deep.equal(testArgumentOptionalNumber);
-            expect(resultOptArg.values.length).to.equal(1);
-            expect(resultOptArg.values).to.deep.equal(["1"]);
+            expect(resultOptArg.schema).to.deep.eq(testArgumentOptionalNumber);
+            expect(resultOptArg.values.length).to.eq(1);
+            expect(resultOptArg.values).to.deep.eq(["1"]);
         });
 
         it("should parse arguments with more than one resulting value", () => {
             const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
             const result = parser.parse(["abc", "--string", "a", "bbb", "ckajwdajwdja", "-n", "test"]);
 
-            expect(result.length).to.equal(3);
+            expect(result.length).to.eq(3);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.schema).to.deep.equal(testArgumentRequired);
-            expect(resultReqArg.values.length).to.equal(1);
-            expect(resultReqArg.values).to.deep.equal(["abc"]);
+            expect(resultReqArg.schema).to.deep.eq(testArgumentRequired);
+            expect(resultReqArg.values.length).to.eq(1);
+            expect(resultReqArg.values).to.deep.eq(["abc"]);
 
             const resultOptArg1 = result[1];
-            expect(resultOptArg1.schema).to.deep.equal(testArgumentOptionalString);
-            expect(resultOptArg1.values.length).to.equal(3);
-            expect(resultOptArg1.values).to.deep.equal(["a", "bbb", "ckajwdajwdja"]);
+            expect(resultOptArg1.schema).to.deep.eq(testArgumentOptionalString);
+            expect(resultOptArg1.values.length).to.eq(3);
+            expect(resultOptArg1.values).to.deep.eq(["a", "bbb", "ckajwdajwdja"]);
 
             const resultOptArg2 = result[2];
-            expect(resultOptArg2.schema).to.deep.equal(testArgumentOptionalNumber);
-            expect(resultOptArg2.values.length).to.equal(1);
-            expect(resultOptArg2.values).to.deep.equal(["test"]);
+            expect(resultOptArg2.schema).to.deep.eq(testArgumentOptionalNumber);
+            expect(resultOptArg2.values.length).to.eq(1);
+            expect(resultOptArg2.values).to.deep.eq(["test"]);
         });
 
         it("should parse more than one value for a required argument if the values for an optional argument are supplied in between", () => {
@@ -121,36 +122,36 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser([anotherTestRequiredArgument], testOptionalArguments);
             const result = parser.parse(["abc", "-n", "test", "cde"]);
 
-            expect(result.length).to.equal(2);
+            expect(result.length).to.eq(2);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.schema).to.deep.equal(anotherTestRequiredArgument);
-            expect(resultReqArg.values.length).to.equal(2);
-            expect(resultReqArg.values).to.deep.equal(["abc", "cde"]);
+            expect(resultReqArg.schema).to.deep.eq(anotherTestRequiredArgument);
+            expect(resultReqArg.values.length).to.eq(2);
+            expect(resultReqArg.values).to.deep.eq(["abc", "cde"]);
 
             const resultOptArg = result[1];
-            expect(resultOptArg.schema).to.deep.equal(testArgumentOptionalNumber);
-            expect(resultOptArg.values.length).to.equal(1);
-            expect(resultOptArg.values).to.deep.equal(["test"]);
+            expect(resultOptArg.schema).to.deep.eq(testArgumentOptionalNumber);
+            expect(resultOptArg.values.length).to.eq(1);
+            expect(resultOptArg.values).to.deep.eq(["test"]);
         });
 
         it("should parse even optional arguments only", () => {
             const parser = new ArgumentParser([], testOptionalArguments);
             const result = parser.parse(["--string", "string", "string", "string"]);
 
-            expect(result.length).to.equal(1);
+            expect(result.length).to.eq(1);
 
             const resultOptArg = result[0];
-            expect(resultOptArg.schema).to.deep.equal(testArgumentOptionalString);
-            expect(resultOptArg.values.length).to.equal(3);
-            expect(resultOptArg.values).to.deep.equal(["string", "string", "string"])
+            expect(resultOptArg.schema).to.deep.eq(testArgumentOptionalString);
+            expect(resultOptArg.values.length).to.eq(3);
+            expect(resultOptArg.values).to.deep.eq(["string", "string", "string"])
         });
 
         it("should do nothing if no input arguments were given and if no required arguments were given", () => {
             const parser = new ArgumentParser([], testOptionalArguments);
             const result = parser.parse([]);
 
-            expect(result.length).to.equal(0);
+            expect(result.length).to.eq(0);
         });
 
         it("should throw an error if all required arguments are filled but there is still non identifier tokens remaining", () => {
@@ -185,12 +186,12 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(reqArgs, optArgs);
 
             const result = parser.parse(["argument", "argument", "argument", "argument"]);
-            expect(result.length).to.equal(1);
+            expect(result.length).to.eq(1);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.schema).to.deep.equal(testArgumentRequiredAmbiguousAllOrOne);
-            expect(resultReqArg.values.length).to.equal(4);
-            expect(resultReqArg.values).to.deep.equal(["argument", "argument", "argument", "argument"]);
+            expect(resultReqArg.schema).to.deep.eq(testArgumentRequiredAmbiguousAllOrOne);
+            expect(resultReqArg.values.length).to.eq(4);
+            expect(resultReqArg.values).to.deep.eq(["argument", "argument", "argument", "argument"]);
 
             expect(() => parser.parse([])).to.throw();
             expect(() => parser.parse(["argument"])).to.not.throw();
@@ -202,16 +203,16 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(reqArgs, optArgs);
 
             const result = parser.parse(["argument"]);
-            expect(result.length).to.equal(1);
+            expect(result.length).to.eq(1);
 
             const resultOptArg = result[0];
-            expect(resultOptArg.values.length).to.equal(1);
-            expect(resultOptArg.values).to.deep.equal(["argument"]);
+            expect(resultOptArg.values.length).to.eq(1);
+            expect(resultOptArg.values).to.deep.eq(["argument"]);
 
             const anotherResult = parser.parse([]);
 
             const anotherResultReqArg = anotherResult[0];
-            expect(anotherResultReqArg.values.length).to.equal(0);
+            expect(anotherResultReqArg.values.length).to.eq(0);
         });
 
         it("should parse ambiguous number of arguments (all or one) for a optional argument", () => {
@@ -220,12 +221,12 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(reqArgs, optArgs);
 
             const result = parser.parse(["--string", "string", "string", "string", "string"]);
-            expect(result.length).to.equal(1);
+            expect(result.length).to.eq(1);
 
             const resultOptArg = result[0];
-            expect(resultOptArg.schema).to.deep.equal(testArgumentOptionalAmbiguousAllOrOne);
-            expect(resultOptArg.values.length).to.equal(4);
-            expect(resultOptArg.values).to.deep.equal(["string", "string", "string", "string"]);
+            expect(resultOptArg.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrOne);
+            expect(resultOptArg.values.length).to.eq(4);
+            expect(resultOptArg.values).to.deep.eq(["string", "string", "string", "string"]);
 
             expect(() => parser.parse([])).to.not.throw();
             expect(() => parser.parse(["--string"])).to.throw();
@@ -238,24 +239,24 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(reqArgs, optArgs);
 
             const result = parser.parse(["--number", "1", "2", "3", "4"]);
-            expect(result.length).to.equal(1);
+            expect(result.length).to.eq(1);
 
             const resultOptArg = result[0];
-            expect(resultOptArg.schema).to.deep.equal(testArgumentOptionalAmbiguousAllOrDefault);
-            expect(resultOptArg.values.length).to.equal(4);
-            expect(resultOptArg.values).to.deep.equal(["1", "2", "3", "4"]);
+            expect(resultOptArg.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrDefault);
+            expect(resultOptArg.values.length).to.eq(4);
+            expect(resultOptArg.values).to.deep.eq(["1", "2", "3", "4"]);
 
             const anotherResult = parser.parse(["--number"]);
-            expect(result.length).to.equal(1);
+            expect(result.length).to.eq(1);
 
             const resultOptArg1 = anotherResult[0];
-            expect(resultOptArg1.schema).to.deep.equal(testArgumentOptionalAmbiguousAllOrDefault);
-            expect(resultOptArg1.values.length).to.equal(0);
+            expect(resultOptArg1.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrDefault);
+            expect(resultOptArg1.values.length).to.eq(0);
 
             const anotherAnotherResult = parser.parse([]);
 
-            expect(anotherAnotherResult.length).to.equal(0);
-            expect(anotherAnotherResult.values.length).to.equal(0);
+            expect(anotherAnotherResult.length).to.eq(0);
+            expect(anotherAnotherResult.values.length).to.eq(0);
         });
 
         it("should parse ambiguous number of arguments for required arguments", () => {
@@ -266,12 +267,12 @@ describe('Argument Parser Test', () => {
             const anotherParser = new ArgumentParser(reqArgsIncorrectOrder, optArgs);
 
             const result = parser.parse(["argument", "argument", "argument"]);
-            expect(result.length).to.equal(1);
+            expect(result.length).to.eq(1);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.schema).to.equal(testArgumentRequiredAmbiguousAllOrDefault);
-            expect(resultReqArg.values.length).to.equal(3);
-            expect(resultReqArg.values).to.deep.equal(["argument", "argument", "argument"]);
+            expect(resultReqArg.schema).to.eq(testArgumentRequiredAmbiguousAllOrDefault);
+            expect(resultReqArg.values.length).to.eq(3);
+            expect(resultReqArg.values).to.deep.eq(["argument", "argument", "argument"]);
 
             expect(() => anotherParser.parse([])).to.throw();
             expect(() => anotherParser.parse(["argument"])).to.not.throw();
@@ -283,17 +284,17 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(reqArgs, optArgs);
 
             const result = parser.parse(["--string", "string", "string", "string", "--number", "number", "number", "number"]);
-            expect(result.length).to.equal(2);
+            expect(result.length).to.eq(2);
 
             const resultOptArg1 = result[0];
-            expect(resultOptArg1.schema).to.deep.equal(testArgumentOptionalAmbiguousAllOrOne);
-            expect(resultOptArg1.values.length).to.equal(3);
-            expect(resultOptArg1.values).to.deep.equal(["string", "string", "string"]);
+            expect(resultOptArg1.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrOne);
+            expect(resultOptArg1.values.length).to.eq(3);
+            expect(resultOptArg1.values).to.deep.eq(["string", "string", "string"]);
 
             const resultOptArg2 = result[1];
-            expect(resultOptArg2.schema).to.deep.equal(testArgumentOptionalAmbiguousAllOrDefault);
-            expect(resultOptArg2.values.length).to.equal(3);
-            expect(resultOptArg2.values).to.deep.equal(["number", "number", "number"])
+            expect(resultOptArg2.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrDefault);
+            expect(resultOptArg2.values.length).to.eq(3);
+            expect(resultOptArg2.values).to.deep.eq(["number", "number", "number"])
         });
 
         it("should parse ambiguous number of arguments", () => {
@@ -302,22 +303,22 @@ describe('Argument Parser Test', () => {
             const parser = new ArgumentParser(reqArgs, optArgs);
 
             const result = parser.parse(["argument", "argument", "--string", "string", "string", "--number"]);
-            expect(result.length).to.equal(3);
+            expect(result.length).to.eq(3);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.schema).to.deep.equal(testArgumentRequiredAmbiguousAllOrOne);
-            expect(resultReqArg.values.length).to.equal(2);
-            expect(resultReqArg.values).to.deep.equal(["argument", "argument"]);
+            expect(resultReqArg.schema).to.deep.eq(testArgumentRequiredAmbiguousAllOrOne);
+            expect(resultReqArg.values.length).to.eq(2);
+            expect(resultReqArg.values).to.deep.eq(["argument", "argument"]);
 
             const resultOptArg1 = result[1];
-            expect(resultOptArg1.schema).to.deep.equal(testArgumentOptionalAmbiguousAllOrOne);
-            expect(resultOptArg1.values.length).to.equal(2);
-            expect(resultOptArg1.values).to.deep.equal(["string", "string"]);
+            expect(resultOptArg1.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrOne);
+            expect(resultOptArg1.values.length).to.eq(2);
+            expect(resultOptArg1.values).to.deep.eq(["string", "string"]);
 
 
             const resultOptArg2 = result[2];
-            expect(resultOptArg2.schema).to.deep.equal(testArgumentOptionalAmbiguousAllOrDefault);
-            expect(resultOptArg2.values.length).to.equal(0);
+            expect(resultOptArg2.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrDefault);
+            expect(resultOptArg2.values.length).to.eq(0);
         });
     });
 });

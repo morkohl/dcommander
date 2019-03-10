@@ -1,6 +1,6 @@
-import {ArgumentTypeBuilder} from "./ArgumentTypeBuilder";
-import {NumberType} from "../NumberType";
-import {ArgumentSchema} from "../../ArgumentSchema";
+import {ArgumentTypeBuilder} from "./argumentTypeBuilder";
+import {ArgumentSchema} from "../../argumentSchema";
+import {NumberType} from "../../type/numberType";
 
 export class NumberArgumentBuilder extends ArgumentTypeBuilder {
     constructor(schema: ArgumentSchema) {

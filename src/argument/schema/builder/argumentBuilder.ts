@@ -1,5 +1,5 @@
-import {ArgumentSchema, OptionalArgumentSchema} from "../ArgumentSchema";
-import {Builder} from "../../../builder/Builder";
+import {ArgumentSchema, OptionalArgumentSchema} from "../argumentSchema";
+import {Builder} from "../../../builder/builder";
 
 export class ArgumentBuilder extends Builder<ArgumentSchema> {
     flag(): this {

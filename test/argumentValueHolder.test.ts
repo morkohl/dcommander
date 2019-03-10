@@ -1,8 +1,8 @@
 import * as chai from 'chai';
-import {OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "../src/argument/parser/ArgumentValueHolder";
 import {argument, optionalArgument} from "../src/argument/schema/builder/argument";
-import {OptionalArgumentSchema} from "../src/argument/schema/ArgumentSchema";
-import {NARGS} from "../src/argument/schema/builder/ArgumentBuilder";
+import {OptionalArgumentSchema} from "../src/argument/schema/argumentSchema";
+import {OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "../src/argument/parser/argumentValueHolder";
+import {NARGS} from "../src/argument/schema/builder/argumentBuilder";
 
 const expect = chai.expect;
 
@@ -26,12 +26,12 @@ describe('ArgumentValueHolder Test', () => {
     it("should add a value to an existing ArgumentValueHolder", () => {
         const valueHolder = new RequiredArgumentValueHolder(testArgumentRequired);
 
-        expect(valueHolder.values.length).to.equal(0);
+        expect(valueHolder.values.length).to.eq(0);
 
         valueHolder.addValue("test");
 
-        expect(valueHolder.values.length).to.equal(1);
-        expect(valueHolder.values[0]).to.equal("test");
+        expect(valueHolder.values.length).to.eq(1);
+        expect(valueHolder.values[0]).to.eq("test");
     });
 
     it("should not add a value if an ArgumentValueHolder is full", () => {

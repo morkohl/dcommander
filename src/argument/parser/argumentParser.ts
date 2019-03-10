@@ -1,7 +1,8 @@
-import {OptionalArgumentSchema, RequiredArgumentSchema} from "../schema/ArgumentSchema";
-import {NARGS} from "../schema/builder/ArgumentBuilder";
-import {OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "./ArgumentValueHolder";
-import {OptionalArgumentValueHolders, RequiredArgumentValueHolders} from "./ArgumentValueHolders";
+import {OptionalArgumentSchema, RequiredArgumentSchema} from "../schema/argumentSchema";
+import {NARGS} from "../schema/builder/argumentBuilder";
+import {OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "./argumentValueHolder";
+import {OptionalArgumentValueHolders, RequiredArgumentValueHolders} from "./argumentValueHolders";
+import {ArgumentParseResult, ArgumentParseResultFactory} from "./argumentParseResult";
 
 export class ArgumentParser {
     protected requiredSchemas: RequiredArgumentSchema[];
@@ -40,6 +41,14 @@ export class ArgumentParser {
 
         this.checkAllArgsSupplied(this.currentRequired, this.currentOptional);
 
+        return this.finalizeParseResults();
+    }
+
+    private finalizeParseResults(): ArgumentParseResult[] {
+        return this.concatenateValueHolders().map(ArgumentParseResultFactory.fromValueHolder);
+    }
+
+    private concatenateValueHolders(): Array<RequiredArgumentValueHolder | OptionalArgumentValueHolder> {
         return this.requiredValueHolders.argumentSchemaValueHolders.concat(this.optionalValueHolders.argumentSchemaValueHolders);
     }
 
@@ -98,7 +107,7 @@ export class ArgumentParser {
         if (this.currentOptional) {
             if (this.currentOptional.numberOfArgumentsAreAmbiguous()) {
                 if (this.currentOptional.numberOfArgumentsAreAmbiguousSpecific(NARGS.AT_LEAST_ONE)) {
-                    if (this.currentOptional.values.length < 2) {
+                    if (this.currentOptional.values.length === 0) {
                         throw new Error("Expected at least one argument");
                     }
                 } else {
@@ -134,7 +143,7 @@ export class ArgumentParser {
         if (this.currentOptional) {
             this.currentOptional = this.optionalValueHolders.updateValueHolderValues(this.currentOptional, token);
 
-            if(this.currentOptional.isFull()) {
+            if (this.currentOptional.isFull()) {
                 this.currentOptional = null;
             }
         }
@@ -185,5 +194,4 @@ export class ArgumentParser {
         }
         throw new Error(`Invalid Argument supplied: ${identifier}`);
     }
-
 }

@@ -1,5 +1,5 @@
-import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../schema/ArgumentSchema";
-import {NARGS} from "../schema/builder/ArgumentBuilder";
+import {ArgumentSchema, OptionalArgumentSchema, RequiredArgumentSchema} from "../schema/argumentSchema";
+import {NARGS} from "../schema/builder/argumentBuilder";
 
 export abstract class ArgumentValueHolder<S extends ArgumentSchema> {
     schema: S;

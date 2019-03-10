@@ -1,8 +1,8 @@
 import * as chai from 'chai';
 import {command} from "../src/command/builder/commandBuilder";
-import {CommandInstructions} from "../src/command/schema/CommandSchema";
 import {User} from "discord.js";
 import {argument, optionalArgument} from "../src/argument/schema/builder/argument";
+import {CommandInstructions} from "../src/command/schema/commandSchema";
 
 const expect = chai.expect;
 
@@ -28,8 +28,8 @@ describe('CommandBuilder Test', () => {
         expect(commandSchema.canExecute.toString()).to.eq(testCanExec.toString());
         expect(commandSchema.name).to.eq('test');
         expect(commandSchema.argumentSchema.length).to.eq(1);
-        expect(commandSchema.argumentSchema[0].name).to.equal('test');
-        expect(commandSchema.optionalArgumentSchema[0].name).to.equal("test1")
+        expect(commandSchema.argumentSchema[0].name).to.eq('test');
+        expect(commandSchema.optionalArgumentSchema[0].name).to.eq("test1")
     });
 
     it('should throw if duplicate argument names are supplied', () => {

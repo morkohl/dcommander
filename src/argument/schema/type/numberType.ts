@@ -1,4 +1,4 @@
-import {Type} from "./BaseType";
+import {Type} from "./type";
 
 export class NumberType implements Type {
     transform(value: any): number {

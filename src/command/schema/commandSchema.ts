@@ -1,7 +1,6 @@
 import {Message, Guild, User} from 'discord.js';
-import {ArgumentSchema, OptionalArgumentSchema} from "../../argument/schema/ArgumentSchema";
-import {Argument} from "../../argument/Argument";
-import {Schema} from "../../schema/Schema";
+import {ArgumentSchema, OptionalArgumentSchema} from "../../argument/schema/argumentSchema";
+import {Schema} from "../../schema/schema";
 
 export class CommandSchema extends Schema{
     execution: (instructions: CommandInstructions) => void;
@@ -13,8 +12,7 @@ export class CommandSchema extends Schema{
 }
 
 export interface CommandInstructions {
-    //this should be context.. and should have argumentSchema be parsed arguments
-    arguments: { [key: string]: Argument },
+    arguments: { [key: string]: any },
     message: Message,
     user: User
     server: Guild
