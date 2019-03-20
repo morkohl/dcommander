@@ -37,11 +37,6 @@ export namespace ArgumentBuilder {
             return this;
         }
 
-        valueRules<VIB extends ValueInfoBuilder>(buildFunction: (typeBuilder: VIB) => VIB): this {
-            this._valueValidation = buildFunction(new ValueInfoBuilder() as VIB).build();
-            return this;
-        }
-
         string(buildFunction: (stringBuilder: StringValueValidationInfoBuilder) => StringValueValidationInfoBuilder): this {
             this._valueValidation = buildFunction(new StringValueValidationInfoBuilder()).build();
             return this;
@@ -80,22 +75,28 @@ export namespace ArgumentBuilder {
     }
 
     const defaultValueValidationInfo = new StringValueValidationInfoBuilder().build();
-    const defaultArgumentsLength = 0;
+    const defaultArgumentsLength = 1;
 
     const defaultOptions: OptionalArgumentOptions = {
         defaultIdentifierPrefix: '--',
         defaultIdentifierShortPrefix: '-'
     };
 
-    class OptionalArgumentSchemaBuilder extends ArgumentSchemaBuilder {
+    export class OptionalArgumentSchemaBuilder extends ArgumentSchemaBuilder {
+        private buildOptions: OptionalArgumentOptions;
+
         protected _identifiers: string[];
         protected _defaultValue: any;
         protected _flag: boolean;
 
-        constructor(name: string, identifiers?: string[], options?: OptionalArgumentOptions) {
+        constructor(name: string, options?: OptionalArgumentOptions) {
             super(name);
-            options = options || defaultOptions;
-            this._identifiers = identifiers || [(options.defaultIdentifierPrefix) + name, (options.defaultIdentifierShortPrefix) + name.charAt(0)];
+            this.buildOptions = options || defaultOptions;
+        }
+
+        identifiers(identifiers: string[]): this {
+            this._identifiers = identifiers;
+            return this;
         }
 
         default(defaultValue: any): this {
@@ -103,8 +104,8 @@ export namespace ArgumentBuilder {
             return this;
         }
 
-        flag(flagValue: boolean): this {
-            this._flag = flagValue;
+        flag(flagValue?: boolean): this {
+            this._flag = flagValue !== undefined ? flagValue : true;
             return this;
         }
 
@@ -117,7 +118,7 @@ export namespace ArgumentBuilder {
                 },
                 valueValidationInfo: this._valueValidation,
                 argumentsLength: this._argumentsLength,
-                identifiers: this._identifiers,
+                identifiers: this._identifiers || [(this.buildOptions.defaultIdentifierPrefix) + this._name, (this.buildOptions.defaultIdentifierShortPrefix) + this._name.charAt(0)],
                 defaultValue: this._defaultValue,
                 flag: this._flag,
             }
@@ -125,15 +126,15 @@ export namespace ArgumentBuilder {
     }
 
     interface OptionalArgumentOptions {
-        readonly defaultIdentifierPrefix?: string
-        readonly defaultIdentifierShortPrefix?: string
+        readonly defaultIdentifierPrefix: string
+        readonly defaultIdentifierShortPrefix: string
     }
 
-    export function optionalArgumentSchema(name: string, identifiers?: string[], options?: OptionalArgumentOptions) {
-        return new OptionalArgumentSchemaBuilder(name, identifiers, options);
+    export function optionalArgumentSchema(name: string, options?: OptionalArgumentOptions) {
+        return new OptionalArgumentSchemaBuilder(name, options);
     }
 
-    export function argument(name: string): ArgumentSchemaBuilder {
+    export function argumentSchema(name: string): ArgumentSchemaBuilder {
         return new ArgumentSchemaBuilder(name);
     }
 
