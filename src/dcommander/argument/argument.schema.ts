@@ -4,12 +4,12 @@ export interface ArgumentSchema {
     readonly info: ArgumentInfo;
     readonly valueValidationInfo: ValueValidationInfo;
     readonly argumentsLength: ArgumentsLength;
-    readonly defaultValue?: any;
 }
 
 export interface OptionalArgumentSchema extends ArgumentSchema {
     readonly identifiers: string[];
     readonly flag?: boolean
+    readonly defaultValue?: any;
 }
 
 interface ArgumentInfo {
