@@ -21,7 +21,7 @@ export class ArgumentParser {
         this.optionalSchemas = optionalSchemas;
     }
 
-    parse(inputArguments: string[]): any {
+    parse(inputArguments: string[]): ArgumentValueHolder[] {
         this.initNewParse();
 
         let inputArgument: string;
@@ -42,7 +42,7 @@ export class ArgumentParser {
 
         this.checkAllArgsSuppliedToCurrentValueHolders();
 
-        // return this.finalizeParseResults();
+        return this.valueHolders;
     }
 
     private initNewParse() {
@@ -50,7 +50,7 @@ export class ArgumentParser {
 
         if (this.schemas.length !== 0) {
             this.currentRequired = new ArgumentValueHolder(this.schemas[0]);
-            this.valueHolders.concat([this.currentRequired]);
+            this.addToValueHolders(this.currentRequired);
         }
     }
 
@@ -67,7 +67,7 @@ export class ArgumentParser {
             if (this.currentOptional.isAmbiguous()) {
                 if (this.currentOptional.isSpecificAmbiguous(ARGUMENTS_LENGTH.AT_LEAST_ONE)) {
                     if (this.currentOptional.isEmpty()) {
-                        throw new Error("Expected at least one argument");
+                        throw new Error("Expected at least one argumentSchema");
                     }
                 } else {
                     this.currentOptional.setFilled();
@@ -142,7 +142,7 @@ export class ArgumentParser {
     private handleIfCurrentRequiredSetAndFull(token: string, currentRequired: ArgumentValueHolder) {
         this.currentRequired = currentRequired;
 
-        const indexOfCurrentRequiredSchema = this.schemas.indexOf(this.currentRequired.getSchema());
+        const indexOfCurrentRequiredSchema = this.schemas.indexOf((this.currentRequired.schema));
 
         if (indexOfCurrentRequiredSchema + 1 !== this.schemas.length) {
             const nextRequiredSchema = this.schemas[indexOfCurrentRequiredSchema + 1];
@@ -176,7 +176,7 @@ export class ArgumentParser {
         if (valueHolder) {
             if (valueHolder.isAmbiguous()) {
                 if (valueHolder.isSpecificAmbiguous(ARGUMENTS_LENGTH.AT_LEAST_ONE) && valueHolder.isEmpty()) {
-                    throw new Error("Expected at least one argument");
+                    throw new Error("Expected at least one argumentSchema");
                 }
             } else {
                 this.handleNumericArgumentsLengthValueHolder(valueHolder);
@@ -185,46 +185,46 @@ export class ArgumentParser {
     }
 }
 
-class ArgumentValueHolder {
+export class ArgumentValueHolder {
+    private readonly _schema: ArgumentSchema | OptionalArgumentSchema;
     private filled: boolean = false;
-    private schema: ArgumentSchema | OptionalArgumentSchema;
-
-    protected values: string[] = [];
+    private _values: string[] = [];
 
     constructor(schema: ArgumentSchema | OptionalArgumentSchema) {
-        this.schema = schema;
+        this._schema = schema;
     }
+
+    get schema() {
+        return this._schema
+    }
+
+    get values() {
+        return this._values;
+    }
+
 
     valuesLength(): number {
         return this.values.length;
     }
 
-    getValues(): string[] {
-        return this.values;
-    }
-
-    getSchema(): ArgumentSchema | OptionalArgumentSchema {
-        return this.schema;
-    }
-
     getExpectedArgumentsLengthAsString(): string {
-        return this.schema.argumentsLength.toString() || <string>this.schema.argumentsLength;
+        return this._schema.argumentsLength.toString() || <string>this._schema.argumentsLength;
     }
 
     addValue(value: string): void {
-        this.values = this.values.concat([value]);
+        this._values = this._values.concat([value]);
     }
 
     isAmbiguous() {
-        return typeof this.schema.argumentsLength === "string";
+        return typeof this._schema.argumentsLength === "string";
     }
 
     isSpecificAmbiguous(ambiguousSymbol: ARGUMENTS_LENGTH) {
-        return this.isAmbiguous() && this.schema.argumentsLength.toString() === ambiguousSymbol.toString();
+        return this.isAmbiguous() && this._schema.argumentsLength.toString() === ambiguousSymbol.toString();
     }
 
     isFull(): boolean {
-        return this.filled || (!this.isAmbiguous() && this.values.length === this.schema.argumentsLength);
+        return this.filled || (!this.isAmbiguous() && this._values.length === this._schema.argumentsLength);
     }
 
     isEmpty(): boolean {
@@ -236,7 +236,7 @@ class ArgumentValueHolder {
     }
 }
 
-class IdentifierUtil {
+export class IdentifierUtil {
     private optionalSchemas: OptionalArgumentSchema[];
     private mappedIdentifiers: string[][];
 

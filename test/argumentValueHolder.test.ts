@@ -1,30 +1,30 @@
 import * as chai from 'chai';
-import {argument, optionalArgument} from "../src/argument/schema/builder/argument";
-import {OptionalArgumentSchema} from "../src/argument/schema/argumentSchema";
-import {OptionalArgumentValueHolder, RequiredArgumentValueHolder} from "../src/argument/parser/argumentValueHolder";
-import {NARGS} from "../src/argument/schema/builder/argumentBuilder";
+import {ArgumentBuilder} from "../src/dcommander/builder/argument/argument.builder";
+import {ARGUMENTS_LENGTH} from "../src/dcommander/argument/argument.schema";
+import {ArgumentValueHolder} from "../src/dcommander/service/parser/argument.parser";
+import optionalArgumentSchema = ArgumentBuilder.optionalArgumentSchema;
+import argumentSchema = ArgumentBuilder.argumentSchema;
 
 const expect = chai.expect;
 
-const testArgumentBuilderRequired = argument("xyz");
+const testArgumentBuilderRequired = argumentSchema("xyz");
 const testArgumentRequired = testArgumentBuilderRequired.build();
 
-const testArgumentBuilderOptionalString = optionalArgument("string", ["--string", "-s"])
-    .numberOfArguments("+")
-    .string()
-    .url();
-const testArgumentOptionalString = <OptionalArgumentSchema>testArgumentBuilderOptionalString.build();
+const testArgumentBuilderOptionalString = optionalArgumentSchema("string", )
+    .identifiers(["--string", "-s"])
+    .argumentsLength(ARGUMENTS_LENGTH.AT_LEAST_ONE);
 
-const testArgumentBuilderOptionalNumber = optionalArgument("number", ["--number", "-n"])
-    .numberOfArguments("?")
-    .number()
-    .min(10)
-    .max(20);
-const testArgumentOptionalNumber = <OptionalArgumentSchema>testArgumentBuilderOptionalNumber.build();
+const testArgumentOptionalString = testArgumentBuilderOptionalString.build();
+
+const testArgumentBuilderOptionalNumber = optionalArgumentSchema("number", )
+    .identifiers(["--number", "-n"])
+    .argumentsLength(ARGUMENTS_LENGTH.ALL_OR_DEFAULT);
+
+const testArgumentOptionalNumber = testArgumentBuilderOptionalNumber.build();
 
 describe('ArgumentValueHolder Test', () => {
     it("should add a value to an existing ArgumentValueHolder", () => {
-        const valueHolder = new RequiredArgumentValueHolder(testArgumentRequired);
+        const valueHolder = new ArgumentValueHolder(testArgumentRequired);
 
         expect(valueHolder.values.length).to.eq(0);
 
@@ -34,45 +34,37 @@ describe('ArgumentValueHolder Test', () => {
         expect(valueHolder.values[0]).to.eq("test");
     });
 
-    it("should not add a value if an ArgumentValueHolder is full", () => {
-        const valueHolder = new RequiredArgumentValueHolder(testArgumentRequired);
-
-        valueHolder.addValue("test");
-
-        expect(() => valueHolder.addValue("test")).to.throw();
-    });
-
     it("should calculate wether a valueHolder is full", () => {
-        const valueHolder = new RequiredArgumentValueHolder(testArgumentRequired);
+        const valueHolder = new ArgumentValueHolder(testArgumentRequired);
         valueHolder.addValue("test");
 
         expect(valueHolder.isFull()).to.be.true;
 
-        const anotherValueHolder = new RequiredArgumentValueHolder(testArgumentRequired);
+        const anotherValueHolder = new ArgumentValueHolder(testArgumentRequired);
         anotherValueHolder.setFilled();
 
         expect(anotherValueHolder.isFull()).to.be.true;
 
-        const aThirdValueHolder = new RequiredArgumentValueHolder(testArgumentRequired);
+        const aThirdValueHolder = new ArgumentValueHolder(testArgumentRequired);
 
         expect(aThirdValueHolder.isFull()).to.be.false;
     });
 
     it("should return wether the number of arguments of a schema of a value holder are ambiguous", () => {
-        const ambiguousValueHolder = new OptionalArgumentValueHolder(testArgumentOptionalString);
+        const ambiguousValueHolder = new ArgumentValueHolder(testArgumentOptionalString);
 
-        expect(ambiguousValueHolder.numberOfArgumentsAreAmbiguous()).to.be.true;
+        expect(ambiguousValueHolder.isAmbiguous()).to.be.true;
     });
 
     it("should return wether the number of arguments of a schema of a value holder is a specific ambiguous token", () => {
-        const ambiguousValueHolder = new OptionalArgumentValueHolder(testArgumentOptionalString);
+        const ambiguousValueHolder = new ArgumentValueHolder(testArgumentOptionalString);
 
-        expect(ambiguousValueHolder.numberOfArgumentsAreAmbiguousSpecific(NARGS.AT_LEAST_ONE)).to.be.true;
-        expect(ambiguousValueHolder.numberOfArgumentsAreAmbiguousSpecific(NARGS.ALL_OR_DEFAULT)).to.be.false;
+        expect(ambiguousValueHolder.isSpecificAmbiguous(ARGUMENTS_LENGTH.AT_LEAST_ONE)).to.be.true;
+        expect(ambiguousValueHolder.isSpecificAmbiguous(ARGUMENTS_LENGTH.ALL_OR_DEFAULT)).to.be.false;
 
-        const anotherAmbiguousValueHolder = new OptionalArgumentValueHolder(testArgumentOptionalNumber);
+        const anotherAmbiguousValueHolder = new ArgumentValueHolder(testArgumentOptionalNumber);
 
-        expect(anotherAmbiguousValueHolder.numberOfArgumentsAreAmbiguousSpecific(NARGS.ALL_OR_DEFAULT)).to.be.true;
-        expect(anotherAmbiguousValueHolder.numberOfArgumentsAreAmbiguousSpecific(NARGS.AT_LEAST_ONE)).to.be.false;
+        expect(anotherAmbiguousValueHolder.isSpecificAmbiguous(ARGUMENTS_LENGTH.ALL_OR_DEFAULT)).to.be.true;
+        expect(anotherAmbiguousValueHolder.isSpecificAmbiguous(ARGUMENTS_LENGTH.AT_LEAST_ONE)).to.be.false;
     })
 });

@@ -1,80 +1,72 @@
 import * as chai from 'chai';
-import {argument, optionalArgument} from "../src/argument/schema/builder/argument";
-import {ArgumentParser} from "../src/argument/parser/argumentParser";
-import {NARGS} from "../src/argument/schema/builder/argumentBuilder";
-import {OptionalArgumentSchema, RequiredArgumentSchema} from "../src/argument/schema/argumentSchema";
+import {ARGUMENTS_LENGTH, ArgumentSchema, OptionalArgumentSchema} from "../src/dcommander/argument/argument.schema";
+import {ArgumentBuilder} from "../src/dcommander/builder/argument/argument.builder";
+import {ArgumentParser, IdentifierUtil} from "../src/dcommander/service/parser/argument.parser";
+import argumentSchema = ArgumentBuilder.argumentSchema;
+import optionalArgumentSchema = ArgumentBuilder.optionalArgumentSchema;
 
 
 const expect = chai.expect;
 
-//todo write and implement flags and defaultValue values
+const testArgumentBuilderRequired = argumentSchema("requiredTestArgument1");
+const testArgumentRequired = testArgumentBuilderRequired.build();
 
-describe('Argument ArgumentParser Test', () => {
-    const testArgumentBuilderRequired = argument("requiredTestArgument1");
-    const testArgumentRequired = testArgumentBuilderRequired.build();
+const testArgumentOptionalString = optionalArgumentSchema("optionalTestArgument1")
+    .identifiers(["--string", "-s"])
+    .argumentsLength(3)
+    .build();
 
-    const testArgumentOptionalString = <OptionalArgumentSchema>optionalArgument("optionalTestArgument1", ["--string", "-s"])
-        .numberOfArguments(3)
-        .string()
-        .url()
-        .build();
+const testArgumentOptionalNumber = optionalArgumentSchema("optionalTestArgument2")
+    .identifiers(["--number", "-n"])
+    .argumentsLength(1)
+    .build();
 
-    const testArgumentOptionalNumber = <OptionalArgumentSchema>optionalArgument("optionalTestArgument2", ["--number", "-n"])
-        .numberOfArguments(1)
-        .number()
-        .min(10)
-        .max(20)
-        .build();
+const testRequiredArguments: ArgumentSchema[] = [testArgumentRequired];
+const testOptionalArguments: OptionalArgumentSchema[] = [testArgumentOptionalString, testArgumentOptionalNumber];
 
-    const testRequiredArguments: RequiredArgumentSchema[] = [testArgumentRequired];
-    const testOptionalArguments: OptionalArgumentSchema[] = [testArgumentOptionalString, testArgumentOptionalNumber];
+const testArgumentOptionalAmbiguousAllOrDefault = optionalArgumentSchema("optionalTestArgument1")
+    .identifiers(["--number", "-n"])
+    .argumentsLength(ARGUMENTS_LENGTH.ALL_OR_DEFAULT)
+    .build();
 
-    const testArgumentOptionalAmbiguousAllOrDefault = <OptionalArgumentSchema>optionalArgument("optionalTestArgument1", ["--number", "-n"])
-        .numberOfArguments(NARGS.ALL_OR_DEFAULT.toString())
-        .number()
-        .min(10)
-        .max(20)
-        .build();
+const testArgumentOptionalAmbiguousAllOrOne = optionalArgumentSchema("optionalTestArgument2")
+    .identifiers(["--string", "-s"])
+    .argumentsLength(ARGUMENTS_LENGTH.AT_LEAST_ONE)
+    .build();
 
-    const testArgumentOptionalAmbiguousAllOrOne = <OptionalArgumentSchema>optionalArgument("optionalTestArgument2", ["--string", "-s"])
-        .numberOfArguments(NARGS.AT_LEAST_ONE.toString())
-        .string()
-        .url()
-        .build();
+const testArgumentRequiredAmbiguousAllOrOne = argumentSchema("requiredTestArgument1").argumentsLength(ARGUMENTS_LENGTH.AT_LEAST_ONE).build();
+const testArgumentRequiredAmbiguousAllOrDefault = argumentSchema("requiredTestArgument2").argumentsLength(ARGUMENTS_LENGTH.ALL_OR_DEFAULT).build();
 
-    const testArgumentRequiredAmbiguousAllOrOne = argument("requiredTestArgument1").numberOfArguments(NARGS.AT_LEAST_ONE.toString()).build();
-    const testArgumentRequiredAmbiguousAllOrDefault = argument("requiredTestArgument2").numberOfArguments(NARGS.ALL_OR_DEFAULT.toString()).build();
+describe("IdentifierUtil Test", () => {
+    it("should detect an identifier", () => {
+        const identifierUtil = new IdentifierUtil(testOptionalArguments);
+        const result = identifierUtil.isIdentifier(testArgumentOptionalString.identifiers[0]);
 
-
-    describe("Detecting Identifiers", () => {
-        it("should detect an identifier", () => {
-            const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
-            const result: boolean = parser.isIdentifier(testArgumentOptionalString.identifiers[0]);
-
-            expect(result).to.be.true;
-        });
-
-        it("should not detect an invalid identifier", () => {
-            const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
-            const result: boolean = parser.isIdentifier("not an identifier");
-
-            expect(result).to.be.false;
-        });
-
-        it("should get the appropriate identifier", () => {
-            const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
-            const result: OptionalArgumentSchema = parser.getOptionalForIdentifier(testArgumentOptionalString.identifiers[0]);
-
-            expect(result).to.deep.eq(testArgumentOptionalString);
-        });
-
-        it("should throw an error if no valid identifier was provided", () => {
-            const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
-
-            expect(() => parser.getOptionalForIdentifier("not an identifier")).to.throw();
-        })
+        expect(result).to.be.true;
     });
 
+    it("should not detect an invalid identifier", () => {
+        const identifierUtil = new IdentifierUtil(testOptionalArguments);
+        const result = identifierUtil.isIdentifier("not an identifier");
+
+        expect(result).to.be.false;
+    });
+
+    it("should get the appropriate identifier", () => {
+        const identifierUtil = new IdentifierUtil(testOptionalArguments);
+        const result = identifierUtil.getForIdentifier(testArgumentOptionalString.identifiers[0]);
+
+        expect(result).to.deep.eq(testArgumentOptionalString);
+    });
+
+    it("should throw an error if no valid identifier was provided", () => {
+        const identifierUtil = new IdentifierUtil(testOptionalArguments);
+
+        expect(() => identifierUtil.getForIdentifier("not an identifier")).to.throw();
+    })
+});
+
+describe('ArgumentParser Test', () => {
     describe("Parse Explicit Number Of Arguments", () => {
         it("should parse arguments even if only a limited number of optional input arguments were supplied", () => {
             const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
@@ -115,8 +107,8 @@ describe('Argument ArgumentParser Test', () => {
             expect(resultOptArg2.values).to.deep.eq(["test"]);
         });
 
-        it("should parse more than one value for a required argument if the values for an optional argument are supplied in between", () => {
-            const anotherTestRequiredArgumentBuilder = argument("xyz").numberOfArguments(2);
+        it("should parse more than one value for a required argumentSchema if the values for an optional argumentSchema are supplied in between", () => {
+            const anotherTestRequiredArgumentBuilder = argumentSchema("xyz").argumentsLength(2);
             const anotherTestRequiredArgument = anotherTestRequiredArgumentBuilder.build();
 
             const parser = new ArgumentParser([anotherTestRequiredArgument], testOptionalArguments);
@@ -135,7 +127,7 @@ describe('Argument ArgumentParser Test', () => {
             expect(resultOptArg.values).to.deep.eq(["test"]);
         });
 
-        it("should parse even optional arguments only", () => {
+        it("should parse optional arguments only", () => {
             const parser = new ArgumentParser([], testOptionalArguments);
             const result = parser.parse(["--string", "string", "string", "string"]);
 
@@ -160,19 +152,19 @@ describe('Argument ArgumentParser Test', () => {
             expect(() => parser.parse(["valid_token", "invalid_token"])).to.throw()
         });
 
-        it("should throw an error if too many arguments were supplied to a required argument", () => {
+        it("should throw an error if too many arguments were supplied to a required argumentSchema", () => {
             const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
 
             expect(() => parser.parse(["too", "many", "arguments"])).to.throw()
         });
 
-        it("should throw an error if too many arguments were supplied to an optional argument", () => {
+        it("should throw an error if too many arguments were supplied to an optional argumentSchema", () => {
             const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
 
             expect(() => parser.parse(["xyz", "-n", "1", "2"])).to.throw()
         });
 
-        it("should throw an error if too few arguments were supplied to a non ambiguous optional argument", () => {
+        it("should throw an error if too few arguments were supplied to a non ambiguous optional argumentSchema", () => {
             const parser = new ArgumentParser(testRequiredArguments, testOptionalArguments);
 
             expect(() => parser.parse(["abc", "-n"])).to.throw();
@@ -180,44 +172,44 @@ describe('Argument ArgumentParser Test', () => {
     });
 
     describe("Parse Ambiguous Number Of Arguments", () => {
-        it("should parse ambiguous number of arguments (all or one) for a required argument", () => {
-            const reqArgs: RequiredArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrOne];
+        it("should parse ambiguous number of arguments (all or one) for a required argumentSchema", () => {
+            const reqArgs: ArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrOne];
             const optArgs: OptionalArgumentSchema[] = [];
             const parser = new ArgumentParser(reqArgs, optArgs);
 
-            const result = parser.parse(["argument", "argument", "argument", "argument"]);
+            const result = parser.parse(["argumentSchema", "argumentSchema", "argumentSchema", "argumentSchema"]);
             expect(result.length).to.eq(1);
 
             const resultReqArg = result[0];
             expect(resultReqArg.schema).to.deep.eq(testArgumentRequiredAmbiguousAllOrOne);
             expect(resultReqArg.values.length).to.eq(4);
-            expect(resultReqArg.values).to.deep.eq(["argument", "argument", "argument", "argument"]);
+            expect(resultReqArg.values).to.deep.eq(["argumentSchema", "argumentSchema", "argumentSchema", "argumentSchema"]);
 
             expect(() => parser.parse([])).to.throw();
-            expect(() => parser.parse(["argument"])).to.not.throw();
+            expect(() => parser.parse(["argumentSchema"])).to.not.throw();
         });
 
-        it("should parse ambiguous number of arguments (all or default) for a required argument", () => {
-            const reqArgs: RequiredArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrDefault];
+        it("should parse ambiguous number of arguments (all or default) for a required argumentSchema", () => {
+            const reqArgs: ArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrDefault];
             const optArgs: OptionalArgumentSchema[] = [];
             const parser = new ArgumentParser(reqArgs, optArgs);
 
-            const result = parser.parse(["argument"]);
+            const result = parser.parse(["argumentSchema"]);
             expect(result.length).to.eq(1);
 
             const resultOptArg = result[0];
             expect(resultOptArg.values.length).to.eq(1);
-            expect(resultOptArg.values).to.deep.eq(["argument"]);
+            expect(resultOptArg.values).to.deep.eq(["argumentSchema"]);
 
             const anotherResult = parser.parse([]);
 
             const anotherResultReqArg = anotherResult[0];
             expect(anotherResultReqArg.values.length).to.eq(0);
-            expect(anotherResultReqArg.defaultValue).to.eq(anotherResultReqArg.schema.defaultValue)
+            expect(anotherResultReqArg.schema.defaultValue).to.eq(testArgumentRequiredAmbiguousAllOrDefault.defaultValue)
         });
 
-        it("should parse ambiguous number of arguments (all or one) for a optional argument", () => {
-            const reqArgs: RequiredArgumentSchema[] = [];
+        it("should parse ambiguous number of arguments (all or one) for a optional argumentSchema", () => {
+            const reqArgs: ArgumentSchema[] = [];
             const optArgs: OptionalArgumentSchema[] = [testArgumentOptionalAmbiguousAllOrOne];
             const parser = new ArgumentParser(reqArgs, optArgs);
 
@@ -234,8 +226,8 @@ describe('Argument ArgumentParser Test', () => {
             expect(() => parser.parse(["--string", "string"])).to.not.throw();
         });
 
-        it("should parse ambiguous number of arguments (all or default) for a optional argument", () => {
-            const reqArgs: RequiredArgumentSchema[] = [];
+        it("should parse ambiguous number of arguments (all or default) for a optional argumentSchema", () => {
+            const reqArgs: ArgumentSchema[] = [];
             const optArgs: OptionalArgumentSchema[] = [testArgumentOptionalAmbiguousAllOrDefault];
             const parser = new ArgumentParser(reqArgs, optArgs);
 
@@ -261,26 +253,26 @@ describe('Argument ArgumentParser Test', () => {
         });
 
         it("should parse ambiguous number of arguments for required arguments", () => {
-            const reqArgs: RequiredArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrDefault, testArgumentRequiredAmbiguousAllOrOne];
-            const reqArgsIncorrectOrder: RequiredArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrOne, testArgumentRequiredAmbiguousAllOrDefault];
+            const reqArgs: ArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrDefault, testArgumentRequiredAmbiguousAllOrOne];
+            const reqArgsIncorrectOrder: ArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrOne, testArgumentRequiredAmbiguousAllOrDefault];
             const optArgs: OptionalArgumentSchema[] = [testArgumentOptionalAmbiguousAllOrDefault, testArgumentOptionalAmbiguousAllOrOne];
             const parser = new ArgumentParser(reqArgs, optArgs);
             const anotherParser = new ArgumentParser(reqArgsIncorrectOrder, optArgs);
 
-            const result = parser.parse(["argument", "argument", "argument"]);
+            const result = parser.parse(["argumentSchema", "argumentSchema", "argumentSchema"]);
             expect(result.length).to.eq(1);
 
             const resultReqArg = result[0];
             expect(resultReqArg.schema).to.eq(testArgumentRequiredAmbiguousAllOrDefault);
             expect(resultReqArg.values.length).to.eq(3);
-            expect(resultReqArg.values).to.deep.eq(["argument", "argument", "argument"]);
+            expect(resultReqArg.values).to.deep.eq(["argumentSchema", "argumentSchema", "argumentSchema"]);
 
             expect(() => anotherParser.parse([])).to.throw();
-            expect(() => anotherParser.parse(["argument"])).to.not.throw();
+            expect(() => anotherParser.parse(["argumentSchema"])).to.not.throw();
         });
 
         it("should parse ambiguous number of arguments for optional arguments", () => {
-            const reqArgs: RequiredArgumentSchema[] = [];
+            const reqArgs: ArgumentSchema[] = [];
             const optArgs: OptionalArgumentSchema[] = [testArgumentOptionalAmbiguousAllOrDefault, testArgumentOptionalAmbiguousAllOrOne];
             const parser = new ArgumentParser(reqArgs, optArgs);
 
@@ -299,17 +291,17 @@ describe('Argument ArgumentParser Test', () => {
         });
 
         it("should parse ambiguous number of arguments", () => {
-            const reqArgs: RequiredArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrOne, testArgumentRequiredAmbiguousAllOrDefault];
+            const reqArgs: ArgumentSchema[] = [testArgumentRequiredAmbiguousAllOrOne, testArgumentRequiredAmbiguousAllOrDefault];
             const optArgs: OptionalArgumentSchema[] = [testArgumentOptionalAmbiguousAllOrOne, testArgumentOptionalAmbiguousAllOrDefault];
             const parser = new ArgumentParser(reqArgs, optArgs);
 
-            const result = parser.parse(["argument", "argument", "--string", "string", "string", "--number"]);
+            const result = parser.parse(["argumentSchema", "argumentSchema", "--string", "string", "string", "--number"]);
             expect(result.length).to.eq(3);
 
             const resultReqArg = result[0];
             expect(resultReqArg.schema).to.deep.eq(testArgumentRequiredAmbiguousAllOrOne);
             expect(resultReqArg.values.length).to.eq(2);
-            expect(resultReqArg.values).to.deep.eq(["argument", "argument"]);
+            expect(resultReqArg.values).to.deep.eq(["argumentSchema", "argumentSchema"]);
 
             const resultOptArg1 = result[1];
             expect(resultOptArg1.schema).to.deep.eq(testArgumentOptionalAmbiguousAllOrOne);
