@@ -1,11 +1,9 @@
 import {Message, Guild, User} from 'discord.js';
-import {ArgumentSchema, OptionalArgumentSchema} from "../../argument/schema/argumentSchema";
-import {Schema} from "../../schema/schema";
+import {ArgumentSchema} from "../argument/argument.schema";
 
-export class CommandSchema extends Schema{
+export interface  CommandSchema{
     execution: (instructions: CommandInstructions) => void;
     argumentSchema: ArgumentSchema[];
-    optionalArgumentSchema: OptionalArgumentSchema[];
     cooldown: number;
     canExecute: (user: User) => boolean;
     prefix: string;
