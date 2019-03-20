@@ -1,4 +1,4 @@
-import {CommandSchema} from "./command/schema/commandSchema";
+import {CommandSchema} from "./command/command.schema";
 import {EventEmitter} from "events";
 import {Message} from "discord.js";
 
