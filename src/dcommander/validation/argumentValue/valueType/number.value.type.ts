@@ -2,7 +2,11 @@ import {ValueTypeImpl} from "./validation.value.type";
 
 export class NumberValueType extends ValueTypeImpl {
     convertValue(value: string): number {
-        return Number(value);
+        const castResult = Number(value);
+        if(isNaN(castResult)) {
+            throw new Error(`${value} is not a number.`)
+        }
+        return castResult;
     }
 
     convertValues(values: string[]): number[] {
