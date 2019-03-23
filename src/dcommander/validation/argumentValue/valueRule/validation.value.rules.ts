@@ -1,6 +1,6 @@
 export interface ValueRule {
     readonly ruleFunction: RuleFunction;
-    readonly errorFormatter?: ErrorFormatter
+    readonly errorFormatter: ErrorFormatter
 }
 
 export type RuleFunction = (value: any) => boolean;
