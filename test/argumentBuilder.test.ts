@@ -31,7 +31,7 @@ describe("ArgumentSchemaBuilder Test", () => {
         expect(builder.build().info.name).to.eq(testArgumentName);
     });
 
-    it("should build with the argumentSchema info of an argumentSchema _schema", () => {
+    it("should build with the argumentSchema info", () => {
         const testDescription = "test";
         const testUsage = "test";
 
@@ -41,7 +41,7 @@ describe("ArgumentSchemaBuilder Test", () => {
         expect(result.info.usage).to.eq(testUsage);
     });
 
-    it("should build with proposed amount of arguments of an argumentSchema _schema", () => {
+    it("should build with proposed amount of arguments of an argumentSchema", () => {
         const testArgumentsLength = ARGUMENTS_LENGTH.ALL_OR_DEFAULT;
 
         const result = builder.argumentsLength(testArgumentsLength).build();
@@ -57,7 +57,7 @@ describe("ArgumentSchemaBuilder Test", () => {
     });
 
     describe("Building With ValueValidationInfo", () => {
-        it("should build with a ValueValidationInfo with a StiringValueType if any was chosen", () => {
+        it("should build with a ValueValidationInfo with a StringValueType if any was chosen", () => {
             const result = builder.any().build();
 
             expect(result.valueValidationInfo.valueType).to.be.an.instanceOf(StringValueType);

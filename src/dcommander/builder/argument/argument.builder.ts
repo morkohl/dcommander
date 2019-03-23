@@ -16,6 +16,7 @@ export namespace ArgumentBuilder {
         protected _usage: string;
         protected _valueValidation: ValueValidationInfo;
         protected _argumentsLength: ArgumentsLength;
+        protected _defaultValue: any;
 
 
         constructor(name: string) {
@@ -34,6 +35,11 @@ export namespace ArgumentBuilder {
 
         argumentsLength(argumentsLength: ArgumentsLength) {
             this._argumentsLength = argumentsLength;
+            return this;
+        }
+
+        default(defaultValue: any): this {
+            this._defaultValue = defaultValue;
             return this;
         }
 
@@ -68,6 +74,7 @@ export namespace ArgumentBuilder {
                     description: this._description,
                     usage: this._usage
                 },
+                defaultValue: this._defaultValue,
                 valueValidationInfo: this._valueValidation || defaultValueValidationInfo,
                 argumentsLength: this._argumentsLength || defaultArgumentsLength
             }
@@ -113,11 +120,11 @@ export namespace ArgumentBuilder {
             return {
                 info: {
                     name: this._name,
-                    description: this._description || undefined,
-                    usage: this._usage || undefined
+                    description: this._description,
+                    usage: this._usage
                 },
-                valueValidationInfo: this._valueValidation,
-                argumentsLength: this._argumentsLength,
+                valueValidationInfo: this._valueValidation || defaultValueValidationInfo,
+                argumentsLength: this._argumentsLength || defaultArgumentsLength,
                 identifiers: this._identifiers || [(this.buildOptions.defaultIdentifierPrefix) + this._name, (this.buildOptions.defaultIdentifierShortPrefix) + this._name.charAt(0)],
                 defaultValue: this._defaultValue,
                 flag: this._flag,

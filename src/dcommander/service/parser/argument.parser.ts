@@ -1,9 +1,5 @@
-import {
-    ARGUMENTS_LENGTH,
-    ArgumentSchema,
-    OptionalArgumentSchema
-} from "../../argument/argument.schema";
-
+import {ARGUMENTS_LENGTH, ArgumentSchema, OptionalArgumentSchema} from "../../argument/argument.schema";
+import {ValueType} from "../../validation/argumentValue/valueType/validation.value.type";
 
 export class ArgumentParser {
     protected schemas: ArgumentSchema[];
@@ -21,7 +17,7 @@ export class ArgumentParser {
         this.optionalSchemas = optionalSchemas;
     }
 
-    parse(inputArguments: string[]): ArgumentValueHolder[] {
+    parse(inputArguments: string[]): ParsedArgument[] {
         this.initNewParse();
 
         let inputArgument: string;
@@ -42,7 +38,7 @@ export class ArgumentParser {
 
         this.checkAllArgsSuppliedToCurrentValueHolders();
 
-        return this.valueHolders;
+        return this.valueHolders.map(valueHolder => valueHolder.getParsedArgument());
     }
 
     private initNewParse() {
@@ -176,7 +172,7 @@ export class ArgumentParser {
         if (valueHolder) {
             if (valueHolder.isAmbiguous()) {
                 if (valueHolder.isSpecificAmbiguous(ARGUMENTS_LENGTH.AT_LEAST_ONE) && valueHolder.isEmpty()) {
-                    throw new Error("Expected at least one argumentSchema");
+                    throw new Error("Expected at least one argument");
                 }
             } else {
                 this.handleNumericArgumentsLengthValueHolder(valueHolder);
@@ -200,6 +196,29 @@ export class ArgumentValueHolder {
 
     get values() {
         return this._values;
+    }
+
+    getParsedArgument(): ParsedArgument {
+        let type: ValueType = this.schema.valueValidationInfo.valueType;
+
+        let excludeValidation: boolean = false;
+        let values: any = type.convertValues(this.values);
+
+        if ('flag' in this.schema && this.schema.flag !== undefined) {
+            values = this.schema.flag;
+            excludeValidation = true;
+        } else if(this.isEmpty() && this.isSpecificAmbiguous(ARGUMENTS_LENGTH.ALL_OR_DEFAULT) && this.schema.defaultValue) {
+            values = this.schema.defaultValue;
+            excludeValidation = true;
+        } else {
+            values = type.convertValues(this.values);
+        }
+
+        return {
+            schema: this.schema,
+            values: values,
+            excludeValidation: excludeValidation
+        }
     }
 
 
@@ -261,4 +280,10 @@ export class IdentifierUtil {
     private identifiersContain(identifiers: string[], token: string): boolean {
         return identifiers.indexOf(token) >= 0;
     }
+}
+
+export interface ParsedArgument {
+    excludeValidation: boolean,
+    values: any,
+    schema: ArgumentSchema
 }
