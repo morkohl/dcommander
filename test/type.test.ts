@@ -21,7 +21,7 @@ describe("ValueType Test", () => {
             expect(type.convertValue("1")).to.eq(1);
             expect(type.convertValue("1234")).to.eq(1234);
             expect(type.convertValue("0x12")).to.eq(18);
-            expect(type.convertValue("a")).to.throw;
+            expect(() => type.convertValue("a")).to.throw();
         });
     });
 
