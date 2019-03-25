@@ -1,7 +1,7 @@
 import {Builder} from "../builder";
-import {ArgumentSchema, ArgumentsLength, OptionalArgumentSchema} from "../../argument/argument.schema";
+import {ArgumentSchema, ArgumentsLength, OptionalArgumentSchema} from "../../argument/argumentSchema";
 import {Matcher} from "../../validation/matchers/matchers";
-import {Types} from "../../argument/valueType/types";
+import {Types} from "../../argument/types";
 import {MatcherBuilders} from "../validation/matcherBuilder";
 
 export namespace ArgumentBuilders {

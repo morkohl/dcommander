@@ -1,4 +1,4 @@
-import {ArgumentSchema} from "./argument.schema";
+import {ArgumentSchema} from "./argumentSchema";
 
 export interface ArgumentsNamespace {
     [key: string]: Argument
