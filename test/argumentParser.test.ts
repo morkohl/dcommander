@@ -1,22 +1,19 @@
 import * as chai from 'chai';
-import {ARGUMENTS_LENGTH, ArgumentSchema, OptionalArgumentSchema} from "../src/dcommander/argument/argument.schema";
-import {ArgumentBuilder} from "../src/dcommander/builder/argument/argument.builder";
-import {ArgumentParser, IdentifierUtil} from "../src/dcommander/service/parser/argument.parser";
-import argumentSchema = ArgumentBuilder.argumentSchema;
-import optionalArgumentSchema = ArgumentBuilder.optionalArgumentSchema;
-
+import {ArgumentBuilders} from "../src/dcommander/builder/argument/argumentBuilders";
+import {ArgumentParser, IdentifierUtil} from "../src/dcommander/service/parser/argumentParser";
+import {ARGUMENTS_LENGTH, ArgumentSchema, OptionalArgumentSchema} from "../src/dcommander/argument/argumentSchema";
 
 const expect = chai.expect;
 
-const testArgumentBuilderRequired = argumentSchema("requiredTestArgument1");
+const testArgumentBuilderRequired = ArgumentBuilders.argumentSchema("requiredTestArgument1");
 const testArgumentRequired = testArgumentBuilderRequired.build();
 
-const testArgumentOptionalString = optionalArgumentSchema("optionalTestArgument1")
+const testArgumentOptionalString = ArgumentBuilders.optionalArgumentSchema("optionalTestArgument1")
     .identifiers(["--string", "-s"])
     .argumentsLength(3)
     .build();
 
-const testArgumentOptionalNumber = optionalArgumentSchema("optionalTestArgument2")
+const testArgumentOptionalNumber = ArgumentBuilders.optionalArgumentSchema("optionalTestArgument2")
     .identifiers(["--number", "-n"])
     .argumentsLength(1)
     .build();
@@ -24,18 +21,18 @@ const testArgumentOptionalNumber = optionalArgumentSchema("optionalTestArgument2
 const testRequiredArguments: ArgumentSchema[] = [testArgumentRequired];
 const testOptionalArguments: OptionalArgumentSchema[] = [testArgumentOptionalString, testArgumentOptionalNumber];
 
-const testArgumentOptionalAmbiguousAllOrDefault = optionalArgumentSchema("optionalTestArgument1")
+const testArgumentOptionalAmbiguousAllOrDefault = ArgumentBuilders.optionalArgumentSchema("optionalTestArgument1")
     .identifiers(["--number", "-n"])
     .argumentsLength(ARGUMENTS_LENGTH.ALL_OR_DEFAULT)
     .build();
 
-const testArgumentOptionalAmbiguousAllOrOne = optionalArgumentSchema("optionalTestArgument2")
+const testArgumentOptionalAmbiguousAllOrOne = ArgumentBuilders.optionalArgumentSchema("optionalTestArgument2")
     .identifiers(["--string", "-s"])
     .argumentsLength(ARGUMENTS_LENGTH.AT_LEAST_ONE)
     .build();
 
-const testArgumentRequiredAmbiguousAllOrOne = argumentSchema("requiredTestArgument1").argumentsLength(ARGUMENTS_LENGTH.AT_LEAST_ONE).build();
-const testArgumentRequiredAmbiguousAllOrDefault = argumentSchema("requiredTestArgument2").argumentsLength(ARGUMENTS_LENGTH.ALL_OR_DEFAULT).default({foo: "bar"}).build();
+const testArgumentRequiredAmbiguousAllOrOne = ArgumentBuilders.argumentSchema("requiredTestArgument1").argumentsLength(ARGUMENTS_LENGTH.AT_LEAST_ONE).build();
+const testArgumentRequiredAmbiguousAllOrDefault = ArgumentBuilders.argumentSchema("requiredTestArgument2").argumentsLength(ARGUMENTS_LENGTH.ALL_OR_DEFAULT).default({foo: "bar"}).build();
 
 describe("IdentifierUtil Test", () => {
     it("should detect an identifier", () => {
@@ -108,7 +105,7 @@ describe('ArgumentParser Test', () => {
         });
 
         it("should parse more than one value for a schema if the values for an optional schema are supplied in between", () => {
-            const anotherTestRequiredArgumentBuilder = argumentSchema("xyz").argumentsLength(2);
+            const anotherTestRequiredArgumentBuilder = ArgumentBuilders.argumentSchema("xyz").argumentsLength(2);
             const anotherTestRequiredArgument = anotherTestRequiredArgumentBuilder.build();
 
             const parser = new ArgumentParser([anotherTestRequiredArgument], testOptionalArguments);
@@ -215,7 +212,7 @@ describe('ArgumentParser Test', () => {
             expect(result.length).to.eq(1);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.values).to.eq(testArgumentRequiredAmbiguousAllOrDefault.defaultValue);
+            expect(resultReqArg.values).to.eq(testArgumentRequiredAmbiguousAllOrDefault.valueInfo.defaultValue);
         });
 
         it("should return the default value of multiple schemas if the length of supplied arguments is 0", () => {
@@ -227,10 +224,10 @@ describe('ArgumentParser Test', () => {
             expect(result.length).to.eq(2);
 
             const resultReqArg = result[0];
-            expect(resultReqArg.values).to.eq(testArgumentRequiredAmbiguousAllOrDefault.defaultValue);
+            expect(resultReqArg.values).to.eq(testArgumentRequiredAmbiguousAllOrDefault.valueInfo.defaultValue);
 
             const anotherResultReqArg = result[1];
-            expect(anotherResultReqArg.values).to.eq(testArgumentRequiredAmbiguousAllOrDefault.defaultValue);
+            expect(anotherResultReqArg.values).to.eq(testArgumentRequiredAmbiguousAllOrDefault.valueInfo.defaultValue);
         });
 
         it("should parse ambiguous number of arguments (all or one) for a optional schema", () => {
