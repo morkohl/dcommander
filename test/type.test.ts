@@ -5,8 +5,6 @@ import StringValueType = Types.StringValueType;
 import BooleanValueType = Types.BooleanValueType;
 import ObjectValueType = Types.ObjectValueType;
 import DateValueType = Types.DateValueType;
-import {Errors} from "./dcommander/error/errors";
-import ConversionError = Errors.ConversionError;
 
 const expect = chai.expect;
 
