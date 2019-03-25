@@ -1,7 +1,7 @@
-export namespace Errors {
-    export type ValidationErrorMessageFormatter = (value: any) => string  | string;
+export type ValidationErrorMessageFormatter = (value: any) => string  | string;
 
-    function formatValidationErrorMessage(format: ValidationErrorMessageFormatter, failedValue: string): string {
+export namespace Errors {
+    export function formatValidationErrorMessage(format: ValidationErrorMessageFormatter, failedValue: string): string {
         if(format instanceof Function) {
             return format(failedValue);
         }
@@ -9,9 +9,6 @@ export namespace Errors {
     }
 
     export class ValidationError extends Error {
-        constructor(format: ValidationErrorMessageFormatter, failedValue: any) {
-            super(formatValidationErrorMessage(format, failedValue));
-        }
     }
 
     export class ConversionError extends Error {
