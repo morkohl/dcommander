@@ -1,5 +1,5 @@
 import {Message, Guild, User} from 'discord.js';
-import {ArgumentSchema} from "../argument/argument.schema";
+import {ArgumentSchema} from "../argument/argumentSchema";
 
 export interface  CommandSchema{
     execution: (instructions: CommandInstructions) => void;
