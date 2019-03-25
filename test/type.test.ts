@@ -1,5 +1,5 @@
 import * as chai from "chai";
-import {Types} from "../src/dcommander/argument/valueType/types";
+import {Types} from "../src/dcommander/argument/types";
 import NumberValueType = Types.NumberValueType;
 import StringValueType = Types.StringValueType;
 import BooleanValueType = Types.BooleanValueType;

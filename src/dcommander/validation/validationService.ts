@@ -1,6 +1,6 @@
-import {ValueRule} from "./argumentValue/valueRule/validation.value.rules";
-import {ParsedArgument} from "../service/parser/argument.parser";
-import {ValidationError} from "../error/validation.error";
+import {ParsedArgument} from "../service/parser/argumentParser";
+import {Errors} from "../error/errors";
+import {Matcher} from "./matchers/matchers";
 
 export interface ValidationOptions {
     gatherAllValidationErrors: boolean,
@@ -36,7 +36,7 @@ export class ArgumentValidationService {
     }
 
     private validateArgumentsCatchAllErrors(parsedArguments: ParsedArgument[]): void | never {
-        const errors: ValidationError[] = [];
+        const errors: Errors.ValidationError[] = [];
 
         for (let i = 0; i < parsedArguments.length; i++) {
             this.validateArgument(parsedArguments[i], error => errors.push(error));
@@ -44,7 +44,7 @@ export class ArgumentValidationService {
 
         if(errors.length !== 0) {
             const concatenatedErrorMessage: string = errors.map(error => error.message).join(this.validationOptions.errorFormatSeparator);
-            throw new ValidationError(concatenatedErrorMessage);
+            throw new Errors.ValidationError(concatenatedErrorMessage);
         }
 
         return;
@@ -56,21 +56,21 @@ export class ArgumentValidationService {
         }
     }
 
-    private validateArgument(parsedArgument: ParsedArgument, failHandler?: (error: ValidationError) => void): void | never {
-        const rules = parsedArgument.schema.valueValidationInfo.valueRules;
+    private validateArgument(parsedArgument: ParsedArgument, failHandler?: (error: Errors.ValidationError) => void): void | never {
+        const matchers = parsedArgument.schema.validationMatchers;
         const values = parsedArgument.values;
 
         let value;
-        let rule: ValueRule;
+        let matcher: Matcher;
 
         for (let i = 0; i < values.length; i++) {
             value = values[i];
 
-            for (let j = 0; j < rules.length; j++) {
-                rule = rules[j];
+            for (let j = 0; j < matchers.length; j++) {
+                matcher = matchers[j];
 
                 try {
-                    this.tryValidate(rule, value)
+                    this.tryValidate(matcher, value)
                 } catch(e) {
                     if(failHandler) {
                         failHandler(e);
@@ -82,9 +82,9 @@ export class ArgumentValidationService {
         }
     }
 
-    private tryValidate(rule: ValueRule, value: any): void | never {
-        if(!rule.ruleFunction(value)) {
-            throw ValidationError.fromErrorFormatter(rule.errorFormatter, value);
+    private tryValidate(matcher: Matcher, value: any): void | never {
+        if(!matcher.isMatching(value)) {
+            throw new Errors.ValidationError(Errors.formatValidationErrorMessage(matcher.validationErrorMessage, value));
         }
     }
 }

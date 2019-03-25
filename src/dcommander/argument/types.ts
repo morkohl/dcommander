@@ -1,4 +1,4 @@
-import {Errors} from "../../error/errors";
+import {Errors} from "../error/errors";
 
 export namespace Types {
 

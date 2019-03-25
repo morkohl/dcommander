@@ -1,7 +1,7 @@
-import {ArgumentSchema, OptionalArgumentSchema} from "../argument/argument.schema";
+import {ArgumentSchema, OptionalArgumentSchema} from "../argument/argumentSchema";
 import {ArgumentsNamespace} from "../argument/argument";
-import {ArgumentValidationService} from "../validation/validation.service";
-import {ParsedArgument} from "./parser/argument.parser";
+import {ArgumentValidationService} from "../validation/validationService";
+import {ParsedArgument} from "./parser/argumentParser";
 
 export interface ArgumentService {
     validateArguments(parsedArguments: ParsedArgument[]): void

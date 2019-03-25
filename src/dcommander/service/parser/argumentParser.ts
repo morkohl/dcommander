@@ -1,14 +1,18 @@
-import {ARGUMENTS_LENGTH, ArgumentSchema, OptionalArgumentSchema} from "../../argument/argument.schema";
-import {ValueType} from "../../validation/argumentValue/valueType/validation.value.type";
+import {
+    ARGUMENTS_LENGTH,
+    ArgumentSchema,
+    ArgumentsLength,
+    OptionalArgumentSchema,
+} from "../../argument/argumentSchema";
 
 export class ArgumentParser {
     protected schemas: ArgumentSchema[];
     protected optionalSchemas: OptionalArgumentSchema[];
 
-    private currentRequired: ArgumentValueHolder | null;
-    private currentOptional: ArgumentValueHolder | null;
+    private currentRequired: ValueCollector | null;
+    private currentOptional: ValueCollector | null;
 
-    private valueHolders: ArgumentValueHolder[];
+    private valueHolders: ValueCollector[];
 
     private identifierUtil: IdentifierUtil;
 
@@ -38,14 +42,14 @@ export class ArgumentParser {
 
         this.checkAllArgsSuppliedToCurrentValueHolders();
 
-        return this.valueHolders.map(valueHolder => valueHolder.getParsedArgument());
+        return this.valueHolders.map(valueHolder => valueHolder.getResult());
     }
 
     private initNewParse() {
         this.clearState();
 
         if (this.schemas.length !== 0) {
-            this.currentRequired = new ArgumentValueHolder(this.schemas[0]);
+            this.currentRequired = new ValueCollector(this.schemas[0]);
             this.addToValueHolders(this.currentRequired);
         }
     }
@@ -69,34 +73,34 @@ export class ArgumentParser {
                     this.currentOptional.setFilled();
                 }
             } else {
-                this.handleNumericArgumentsLengthValueHolder(this.currentOptional)
+                this.handleNumericArgumentsLengthValueCollector(this.currentOptional)
             }
         }
         this.setCurrentOptionalForIdentifier(token);
     }
 
-    private handleNumericArgumentsLengthValueHolder(valueHolder: ArgumentValueHolder) {
+    private handleNumericArgumentsLengthValueCollector(valueHolder: ValueCollector) {
         if (!valueHolder.isFull()) {
-            throw new Error(`Expected ${valueHolder.getExpectedArgumentsLengthAsString()} arguments but got ${valueHolder.valuesLength()}`)
+            throw new Error(`Expected ${valueHolder.argumentsLength.toString()} arguments but got ${valueHolder.valuesLength}`)
         }
     }
 
     private setCurrentOptionalForIdentifier(token: string): void {
         const detectedSchema = this.identifierUtil.getForIdentifier(token);
-        const valueHolder = new ArgumentValueHolder(detectedSchema);
+        const valueHolder = new ValueCollector(detectedSchema);
         this.setCurrentOptional(valueHolder);
     }
 
-    private setCurrentOptional(valueHolder: ArgumentValueHolder): void {
+    private setCurrentOptional(valueHolder: ValueCollector): void {
         this.currentOptional = valueHolder;
         this.addToValueHolders(valueHolder)
     }
 
-    private addToValueHolders(valueHolder: ArgumentValueHolder) {
+    private addToValueHolders(valueHolder: ValueCollector) {
         this.valueHolders = this.valueHolders.concat([valueHolder]);
     }
 
-    private handleIfCurrentOptionalSet(token: string, currentOptional: ArgumentValueHolder) {
+    private handleIfCurrentOptionalSet(token: string, currentOptional: ValueCollector) {
         this.currentOptional = currentOptional;
 
         if (this.currentOptional.isFull()) {
@@ -115,17 +119,17 @@ export class ArgumentParser {
         }
     }
 
-    private addValueTo(token: string, valueHolder: ArgumentValueHolder): ArgumentValueHolder | never {
+    private addValueTo(token: string, valueHolder: ValueCollector): ValueCollector | never {
         const index = this.valueHolders.indexOf(valueHolder);
         if (index === -1) {
             throw new Error("Element does not exist");
         }
 
-        valueHolder.addValue(token);
+        valueHolder.collect(token);
         return this.valueHolders[index] = valueHolder
     }
 
-    private handleIfCurrentRequiredSet(token: string, currentRequired: ArgumentValueHolder) {
+    private handleIfCurrentRequiredSet(token: string, currentRequired: ValueCollector) {
         this.currentRequired = currentRequired;
 
         if (this.currentRequired.isFull()) {
@@ -135,23 +139,23 @@ export class ArgumentParser {
         }
     }
 
-    private handleIfCurrentRequiredSetAndFull(token: string, currentRequired: ArgumentValueHolder) {
+    private handleIfCurrentRequiredSetAndFull(token: string, currentRequired: ValueCollector) {
         this.currentRequired = currentRequired;
 
         const indexOfCurrentRequiredSchema = this.schemas.indexOf((this.currentRequired.schema));
 
         if (indexOfCurrentRequiredSchema + 1 !== this.schemas.length) {
             const nextRequiredSchema = this.schemas[indexOfCurrentRequiredSchema + 1];
-            const requiredValueHolder = new ArgumentValueHolder(nextRequiredSchema);
+            const requiredValueHolder = new ValueCollector(nextRequiredSchema);
 
-            requiredValueHolder.addValue(token);
+            requiredValueHolder.collect(token);
             this.setCurrentRequired(requiredValueHolder);
         } else {
             throw new Error("Too many arguments");
         }
     }
 
-    private setCurrentRequired(valueHolder: ArgumentValueHolder): void {
+    private setCurrentRequired(valueHolder: ValueCollector): void {
         this.currentRequired = valueHolder;
         this.addToValueHolders(valueHolder);
     }
@@ -168,50 +172,51 @@ export class ArgumentParser {
         this.checkIfAllArgsWereSuppliedTo(this.currentOptional);
     }
 
-    private checkIfAllArgsWereSuppliedTo(valueHolder: ArgumentValueHolder | null): void {
+    private checkIfAllArgsWereSuppliedTo(valueHolder: ValueCollector | null): void {
         if (valueHolder) {
             if (valueHolder.isAmbiguous()) {
                 if (valueHolder.isSpecificAmbiguous(ARGUMENTS_LENGTH.AT_LEAST_ONE) && valueHolder.isEmpty()) {
                     throw new Error("Expected at least one argument");
                 }
             } else {
-                this.handleNumericArgumentsLengthValueHolder(valueHolder);
+                this.handleNumericArgumentsLengthValueCollector(valueHolder);
             }
         }
     }
 }
 
-export class ArgumentValueHolder {
+interface Collector {
+    collect(value: string): void | never;
+
+    isFull(): boolean;
+
+    isEmpty(): boolean;
+
+    getResult(): any;
+}
+
+export class ValueCollector implements Collector {
     private readonly _schema: ArgumentSchema | OptionalArgumentSchema;
     private filled: boolean = false;
-    private _values: string[] = [];
+    private _values: any[] = [];
 
     constructor(schema: ArgumentSchema | OptionalArgumentSchema) {
         this._schema = schema;
     }
 
-    get schema() {
-        return this._schema
-    }
-
-    get values() {
-        return this._values;
-    }
-
-    getParsedArgument(): ParsedArgument {
-        let type: ValueType = this.schema.valueValidationInfo.valueType;
+    getResult(): ParsedArgument {
 
         let excludeValidation: boolean = false;
-        let values: any = type.convertValues(this.values);
+        let values: any = this.values;
 
         if ('flag' in this.schema && this.schema.flag !== undefined) {
             values = this.schema.flag;
             excludeValidation = true;
-        } else if(this.isEmpty() && this.isSpecificAmbiguous(ARGUMENTS_LENGTH.ALL_OR_DEFAULT) && this.schema.defaultValue) {
-            values = this.schema.defaultValue;
+        } else if (this.isEmpty()
+            && this.isSpecificAmbiguous(ARGUMENTS_LENGTH.ALL_OR_DEFAULT)
+            && this.schema.valueInfo.defaultValue) {
+            values = this.schema.valueInfo.defaultValue;
             excludeValidation = true;
-        } else {
-            values = type.convertValues(this.values);
         }
 
         return {
@@ -221,43 +226,54 @@ export class ArgumentValueHolder {
         }
     }
 
+    collect(value: string): void | never {
+        if (this.isFull()) {
+            throw new Error("Collector is full")
+        }
+        this._values = this._values.concat([this.schema.valueInfo.valueType.convertValue(value)]);
+    }
 
-    valuesLength(): number {
+    get schema() {
+        return this._schema
+    }
+
+
+    get values() {
+        return this._values;
+    }
+
+    get valuesLength(): number {
         return this.values.length;
     }
 
-    getExpectedArgumentsLengthAsString(): string {
-        return this._schema.argumentsLength.toString() || <string>this._schema.argumentsLength;
-    }
-
-    addValue(value: string): void {
-        this._values = this._values.concat([value]);
-    }
-
-    isAmbiguous() {
-        return typeof this._schema.argumentsLength === "string";
-    }
-
-    isSpecificAmbiguous(ambiguousSymbol: ARGUMENTS_LENGTH) {
-        return this.isAmbiguous() && this._schema.argumentsLength.toString() === ambiguousSymbol.toString();
-    }
-
-    isFull(): boolean {
-        return this.filled || (!this.isAmbiguous() && this._values.length === this._schema.argumentsLength);
-    }
-
-    isEmpty(): boolean {
-        return this.values.length === 0;
+    get argumentsLength(): ArgumentsLength {
+        return this.schema.valueInfo.argumentsLength;
     }
 
     setFilled(): void {
         this.filled = true;
     }
+
+    isFull(): boolean {
+        return this.filled || (!this.isAmbiguous() && this.valuesLength === this.argumentsLength);
+    }
+
+    isEmpty(): boolean {
+        return !this.valuesLength;
+    }
+
+    isAmbiguous() {
+        return typeof this.argumentsLength === "string";
+    }
+
+    isSpecificAmbiguous(ambiguousSymbol: ARGUMENTS_LENGTH) {
+        return this.isAmbiguous() && this.argumentsLength === ambiguousSymbol;
+    }
 }
 
 export class IdentifierUtil {
-    private optionalSchemas: OptionalArgumentSchema[];
-    private mappedIdentifiers: string[][];
+    private readonly optionalSchemas: OptionalArgumentSchema[];
+    private readonly mappedIdentifiers: string[][];
 
     constructor(optionalSchemas: OptionalArgumentSchema[]) {
         this.optionalSchemas = optionalSchemas;
