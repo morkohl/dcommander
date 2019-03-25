@@ -1,21 +1,12 @@
 import {Constants} from "./constants";
-import {Errors} from "../../error/errors";
+import {ValidationErrorMessageFormatter} from "../../error/errors";
 
 export interface Matcher {
     isMatching(value: any): boolean,
-    validationErrorMessage: Errors.ValidationErrorMessageFormatter
+    validationErrorMessage: ValidationErrorMessageFormatter
 }
 
 export namespace Matchers {
-
-    export function fulfillsCondition(condition: (value: any) => boolean, validationErrorMessage?: Errors.ValidationErrorMessageFormatter): Matcher {
-        return {
-            isMatching(value: any): boolean {
-                return condition(value);
-            },
-            validationErrorMessage: validationErrorMessage ? validationErrorMessage : value => `${value} does not fulfill the condition`
-        }
-    }
 
     export namespace NumberMatchers {
         export function inRange(from: number, to: number): Matcher {
@@ -47,7 +38,7 @@ export namespace Matchers {
     }
 
     export namespace StringMatchers {
-        export function isRegex(regex: RegExp, validationErrorMessage?: Errors.ValidationErrorMessageFormatter): Matcher {
+        export function isRegex(regex: RegExp, validationErrorMessage?: ValidationErrorMessageFormatter): Matcher {
             return {
                 isMatching(value: string): boolean {
                     return regex.test(value);
@@ -61,7 +52,7 @@ export namespace Matchers {
             return isRegex(Constants.String.Regexps.emailRegex, value => `${value} is not a valid E-mail`)
         }
 
-        export function isIPAddress(ipVersion: Constants.String.IPProtocolVersion): Matcher {
+        export function isIPAddress(ipVersion: Constants.String.IPProtocolVersion | string): Matcher {
             if(ipVersion === Constants.String.IPProtocolVersion.IPV4) {
                 return isRegex(Constants.String.Regexps.ipv4Regex);
             } else if(ipVersion === Constants.String.IPProtocolVersion.IPV6) {
