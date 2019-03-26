@@ -5,17 +5,6 @@ import {Constants} from "../src/dcommander/validation/matchers/constants";
 const expect = chai.expect;
 
 describe("Matcher Test", () => {
-    describe("fulfillsCondition", () => {
-        const matcher = Matchers.fulfillsCondition((value: any) => value === 1);
-
-        it("should return true if the supplied value is valid", () => {
-            expect(matcher.isMatching(1)).to.be.true;
-        });
-        it("should return false if the supplied value is invalid", () => {
-            expect(matcher.isMatching(2)).to.be.false;
-        });
-    });
-
     describe("NumberMatchers Test", () => {
         describe("inRange", () => {
             const matcher = Matchers.NumberMatchers.inRange(0, 10);
