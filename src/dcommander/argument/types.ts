@@ -83,11 +83,11 @@ export namespace Types {
         }
 
         static equalsFalse(value: string): boolean {
-            return /(0|n|no|false)/ig.test(value);
+            return /^(0|n|no|false)$/ig.test(value);
         }
 
         static equalsTrue(value: string): boolean {
-            return /(1|y|yes|true)/ig.test(value)
+            return /^(1|y|yes|true)$/ig.test(value)
         }
     }
 

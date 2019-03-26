@@ -59,6 +59,8 @@ describe("ValueType Test", () => {
             expect(type.is("n")).to.be.true;
             expect(type.is("no")).to.be.true;
 
+            expect(type.is("yesfalse")).to.be.false;
+            expect(type.is("10")).to.be.false;
             expect(type.is("anything else")).to.be.false;
             expect(type.is("2")).to.be.false;
         });
