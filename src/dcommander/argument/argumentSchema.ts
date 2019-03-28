@@ -1,9 +1,9 @@
-import {Types} from "./types";
+import {Types} from "./value/types";
 import ValueType = Types.ValueType;
 import {Matcher} from "../validation/matchers/matchers";
 
-
 export interface ArgumentSchema {
+    readonly isRequired: boolean;
     readonly argumentInfo: ArgumentInfo;
     readonly valueInfo: ValueInfo;
     readonly validationMatchers: Matcher[];

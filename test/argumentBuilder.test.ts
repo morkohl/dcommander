@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import {ArgumentBuilders} from "../src/dcommander/builder/argument/argumentBuilders";
 import {ARGUMENTS_LENGTH} from "../src/dcommander/argument/argumentSchema";
-import {Types} from "../src/dcommander/argument/types";
+import {Types} from "../src/dcommander/argument/value/types";
 
 const expect = chai.expect;
 
@@ -114,7 +114,7 @@ describe("OptionalArgumentBuilder Test", () => {
 
     it("should build with identifiers if supplied", () => {
         const someOtherIdentifiers = ["testArgumentIdentifier", "shortTestArgumentIdentifier"];
-        builder = builder.identifiers(someOtherIdentifiers);
+        builder = builder.identifiers(...someOtherIdentifiers);
 
         const result = builder.build();
 

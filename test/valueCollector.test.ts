@@ -1,19 +1,19 @@
 import * as chai from 'chai';
 import {ArgumentBuilders} from "../src/dcommander/builder/argument/argumentBuilders";
-import {ValueCollector} from "../src/dcommander/service/parser/argumentParser";
 import {ARGUMENTS_LENGTH} from "../src/dcommander/argument/argumentSchema";
+import {ValueCollector} from "../src/dcommander/argument/value/collector";
 
 const expect = chai.expect;
 
 const testArgumentRequiredNumeric = ArgumentBuilders.argumentSchema("requiredTestArgument1").build();
 
 const testArgumentAmbiguousAtLeastOne = ArgumentBuilders.optionalArgumentSchema("optionalTestArgument1")
-    .identifiers(["--string", "-s"])
+    .identifiers("--string", "-s")
     .argumentsLength(ARGUMENTS_LENGTH.AT_LEAST_ONE)
     .build();
 
 const testArgumentAmbiguousAllOrDefault = ArgumentBuilders.optionalArgumentSchema("optionalTestArgument2")
-    .identifiers(["--number", "-n"])
+    .identifiers("--number", "-n")
     .argumentsLength(ARGUMENTS_LENGTH.ALL_OR_DEFAULT)
     .build();
 

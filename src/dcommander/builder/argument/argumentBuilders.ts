@@ -1,7 +1,7 @@
 import {Builder} from "../builder";
 import {ArgumentSchema, ArgumentsLength, OptionalArgumentSchema} from "../../argument/argumentSchema";
 import {Matcher} from "../../validation/matchers/matchers";
-import {Types} from "../../argument/types";
+import {Types} from "../../argument/value/types";
 import {MatcherBuilders} from "../validation/matcherBuilder";
 
 export namespace ArgumentBuilders {
@@ -44,7 +44,7 @@ export namespace ArgumentBuilders {
         }
 
         argumentsLength(argumentsLength: ArgumentsLength) {
-            this._argumentsLength = argumentsLength;
+            this._argumentsLength = argumentsLength <= 0 ? 1 : argumentsLength;
             return this;
         }
 
@@ -53,31 +53,31 @@ export namespace ArgumentBuilders {
             return this;
         }
 
-        string(buildFunction: (stringBuilder: StringMatchersBuilder) => StringMatchersBuilder): this {
+        string(buildFunction: (stringBuilder: StringMatchersBuilder) => StringMatchersBuilder = stringBuilder => stringBuilder): this {
             this._matchers = buildFunction(new StringMatchersBuilder()).build();
             this._valueType = new Types.StringValueType();
             return this;
         }
 
-        number(buildFunction: (numberBuilder: NumberMatchersBuilder) => NumberMatchersBuilder): this {
+        number(buildFunction: (numberBuilder: NumberMatchersBuilder) => NumberMatchersBuilder = numberBuilder => numberBuilder): this {
             this._matchers = buildFunction(new NumberMatchersBuilder()).build();
             this._valueType = new Types.NumberValueType();
             return this;
         }
 
-        boolean(buildFunction: (booleanBuilder: BooleanMatchersBuilder) => BooleanMatchersBuilder): this {
+        boolean(buildFunction: (booleanBuilder: BooleanMatchersBuilder) => BooleanMatchersBuilder = booleanBuilder => booleanBuilder): this {
             this._matchers = buildFunction(new BooleanMatchersBuilder()).build();
             this._valueType = new Types.BooleanValueType();
             return this;
         }
 
-        object(buildFunction: (objectBuilder: ObjectMatchersBuilder) => ObjectMatchersBuilder): this {
+        object(buildFunction: (objectBuilder: ObjectMatchersBuilder) => ObjectMatchersBuilder = objectBuilder => objectBuilder): this {
             this._matchers = buildFunction(new ObjectMatchersBuilder()).build();
             this._valueType = new Types.ObjectValueType();
             return this;
         }
 
-        date(buildFunction: (dateBuilder: DateMatchersBuilder) => DateMatchersBuilder): this {
+        date(buildFunction: (dateBuilder: DateMatchersBuilder) => DateMatchersBuilder = dateBuilder => dateBuilder): this {
             this._matchers = buildFunction(new DateMatchersBuilder()).build();
             this._valueType = new Types.DateValueType();
             return this;
@@ -89,6 +89,7 @@ export namespace ArgumentBuilders {
 
         build(): ArgumentSchema {
             return {
+                isRequired: true,
                 argumentInfo: {
                     name: this._name,
                     description: this._description,
@@ -122,7 +123,7 @@ export namespace ArgumentBuilders {
             this.buildOptions = options || DefaultValues.defaultOptions;
         }
 
-        identifiers(identifiers: string[]): this {
+        identifiers(...identifiers: string[]): this {
             this._identifiers = identifiers;
             return this;
         }
@@ -139,6 +140,7 @@ export namespace ArgumentBuilders {
 
         build(): OptionalArgumentSchema {
             return {
+                isRequired: false,
                 argumentInfo: {
                     name: this._name,
                     description: this._description,
