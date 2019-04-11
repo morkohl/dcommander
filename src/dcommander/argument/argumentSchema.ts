@@ -11,6 +11,7 @@ export interface ArgumentSchema {
 
 export interface OptionalArgumentSchema extends ArgumentSchema {
     readonly identifiers: string[];
+    readonly allowDuplicates: boolean;
     readonly flag?: boolean;
 }
 
@@ -20,11 +21,11 @@ interface ArgumentInfo {
     readonly usage?: string;
 }
 
-export enum ARGUMENTS_LENGTH {
+export enum AMBIGUITIES {
     ALL_OR_DEFAULT = '?',
     AT_LEAST_ONE = '+'
 }
-export type ArgumentsLength = ARGUMENTS_LENGTH | number;
+export type ArgumentsLength = AMBIGUITIES | number;
 
 export interface ValueInfo {
     readonly valueType: ValueType
