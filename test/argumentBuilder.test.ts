@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import {ArgumentBuilders} from "../src/dcommander/builder/argument/argumentBuilders";
-import {ARGUMENTS_LENGTH} from "../src/dcommander/argument/argumentSchema";
+import {AMBIGUITIES} from "../src/dcommander/argument/argumentSchema";
 import {Types} from "../src/dcommander/argument/value/types";
 
 const expect = chai.expect;
@@ -31,7 +31,7 @@ describe("ArgumentBuilder Test", () => {
     });
 
     it("should build with proposed amount of arguments of an argumentSchema", () => {
-        const testArgumentsLength = ARGUMENTS_LENGTH.ALL_OR_DEFAULT;
+        const testArgumentsLength = AMBIGUITIES.ALL_OR_DEFAULT;
 
         const result = builder.argumentsLength(testArgumentsLength).build();
 
@@ -128,6 +128,14 @@ describe("OptionalArgumentBuilder Test", () => {
 
        expect(result.argumentInfo.name).to.eq(testArgumentName);
        expect(result.identifiers).to.deep.eq(['!!testArgumentName', '!t']);
+    });
+
+    it("should build with the allowDuplicates flag if chosen", () => {
+        builder = ArgumentBuilders.optionalArgumentSchema(testArgumentName).allowDuplicates();
+
+        const result = builder.build();
+
+        expect(result.allowDuplicates).to.be.true;
     });
 
     it("should build with a flag value if chosen", () => {

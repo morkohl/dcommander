@@ -116,6 +116,7 @@ export namespace ArgumentBuilders {
 
         protected _identifiers: string[];
         protected _defaultValue: any;
+        protected _allowDuplicates: boolean = false;
         protected _flag: boolean;
 
         constructor(name: string, options?: OptionalArgumentOptions) {
@@ -130,6 +131,11 @@ export namespace ArgumentBuilders {
 
         default(defaultValue: any): this {
             this._defaultValue = defaultValue;
+            return this;
+        }
+
+        allowDuplicates(): this {
+            this._allowDuplicates = true;
             return this;
         }
 
@@ -153,6 +159,7 @@ export namespace ArgumentBuilders {
                 },
                 validationMatchers: this._matchers,
                 identifiers: this._identifiers || [(this.buildOptions.defaultIdentifierPrefix) + this._name, (this.buildOptions.defaultIdentifierShortPrefix) + this._name.charAt(0)],
+                allowDuplicates: this._allowDuplicates,
                 flag: this._flag
             }
         }
