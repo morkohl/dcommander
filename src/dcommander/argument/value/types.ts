@@ -1,8 +1,6 @@
-import {Errors} from "../error/errors";
+import {Errors} from "../../error/errors";
 
 export namespace Types {
-
-    import ConversionError = Errors.ConversionError;
 
     export interface ValueType {
         is(value: string): boolean;
@@ -111,8 +109,8 @@ export namespace Types {
             }
         }
 
-        private throwError(value: string, additionalError?: Error): ConversionError {
-            throw new ConversionError(`could not convert ${value} to ${this.typeName}`, additionalError);
+        private throwError(value: string, additionalError?: Error): Errors.ConversionError {
+            throw new Errors.ConversionError(`could not convert ${value} to ${this.typeName}`, additionalError);
         }
 
         convertValues(values: string[]): S[] | any | never{
