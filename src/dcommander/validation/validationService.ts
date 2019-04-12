@@ -2,89 +2,117 @@ import {ParsedArgument} from "../service/parser/argumentParser";
 import {Errors} from "../error/errors";
 import {Matcher} from "./matchers/matchers";
 
-export interface ValidationOptions {
-    gatherAllValidationErrors: boolean,
-    errorFormatSeparator?: string
-}
-
-const defaultValidationOptions: ValidationOptions = {
-    gatherAllValidationErrors: false,
-    errorFormatSeparator: '; '
-};
-
-
-export class ArgumentValidationService {
-    private validationOptions: ValidationOptions;
-
-    constructor(validationOptions?: ValidationOptions) {
-        this.validationOptions = validationOptions || defaultValidationOptions;
-        this.validationOptions.errorFormatSeparator = this.validationOptions.errorFormatSeparator || defaultValidationOptions.errorFormatSeparator;
+export namespace ArgumentValidation {
+    export interface ValidationOptions {
+        gatherAllValidationErrors: boolean,
+        errorFormatSeparator: string
     }
 
-    validate(parsedArguments: ParsedArgument[]): void | never {
-        parsedArguments = this.excludeSelectedFromValidation(parsedArguments);
+    const defaultValidationOptions: ValidationOptions = {
+        gatherAllValidationErrors: false,
+        errorFormatSeparator: '; '
+    };
 
-        if(this.validationOptions.gatherAllValidationErrors) {
-            this.validateArgumentsCatchAllErrors(parsedArguments);
+    export class ValidationResult {
+        readonly errors: Errors.ValidationError[] = [];
+        errorFormatSeparator: string;
+
+        constructor(errorFormatSeparator: string) {
+            this.errorFormatSeparator = errorFormatSeparator;
+        }
+
+        addError(error: Errors.ValidationError): ValidationResult {
+            this.errors.push(error);
+            return this;
+        }
+
+        hasErrors(): boolean {
+            return !!this.errors.length;
+        }
+
+        getMessage(): string {
+            return this.errors.map(error => error.message).join(this.errorFormatSeparator);
+        }
+    }
+
+    export function validate(parsedArguments: ParsedArgument[], validationOptions?: ValidationOptions): ValidationResult {
+        if(validationOptions) {
+            validationOptions.errorFormatSeparator = validationOptions.errorFormatSeparator ? validationOptions.errorFormatSeparator : defaultValidationOptions.errorFormatSeparator;
         } else {
-            this.validateArguments(parsedArguments);
-        }
-    }
-
-    private excludeSelectedFromValidation(parsedArguments: ParsedArgument[]): ParsedArgument[] {
-        return parsedArguments.filter(parsedArgument => parsedArgument.excludeValidation);
-    }
-
-    private validateArgumentsCatchAllErrors(parsedArguments: ParsedArgument[]): void | never {
-        const errors: Errors.ValidationError[] = [];
-
-        for (let i = 0; i < parsedArguments.length; i++) {
-            this.validateArgument(parsedArguments[i], error => errors.push(error));
+            validationOptions = defaultValidationOptions;
         }
 
-        if(errors.length !== 0) {
-            const concatenatedErrorMessage: string = errors.map(error => error.message).join(this.validationOptions.errorFormatSeparator);
-            throw new Errors.ValidationError(concatenatedErrorMessage);
-        }
-
-        return;
+        return new ArgumentValidationService(validationOptions).validate(parsedArguments);
     }
 
-    private validateArguments(parsedArguments: ParsedArgument[]): void | never {
-        for (let i = 0; i < parsedArguments.length; i++) {
-            this.validateArgument(parsedArguments[i]);
+    class ArgumentValidationService {
+        private validationOptions: ValidationOptions;
+
+        constructor(validationOptions: ValidationOptions) {
+            this.validationOptions = validationOptions;
         }
-    }
 
-    private validateArgument(parsedArgument: ParsedArgument, failHandler?: (error: Errors.ValidationError) => void): void | never {
-        const matchers = parsedArgument.schema.validationMatchers;
-        const values = parsedArgument.values;
+        validate(parsedArguments: ParsedArgument[]): ValidationResult {
+            parsedArguments = this.excludeSelectedFromValidation(parsedArguments);
 
-        let value;
-        let matcher: Matcher;
+            if (this.validationOptions.gatherAllValidationErrors) {
+                return this.validateArgumentsCatchAllErrors(parsedArguments);
+            } else {
+                return this.validateArguments(parsedArguments);
+            }
+        }
 
-        for (let i = 0; i < values.length; i++) {
-            value = values[i];
+        private excludeSelectedFromValidation(parsedArguments: ParsedArgument[]): ParsedArgument[] {
+            return parsedArguments.filter(parsedArgument => !parsedArgument.excludeValidation);
+        }
 
-            for (let j = 0; j < matchers.length; j++) {
-                matcher = matchers[j];
+        private validateArgumentsCatchAllErrors(parsedArguments: ParsedArgument[]): ValidationResult {
+            let validationResult = new ValidationResult(this.validationOptions.errorFormatSeparator);
 
+            for (let parsedArgument of parsedArguments) {
+                this.validateArgument(parsedArgument, validationError => validationResult.addError(validationError));
+            }
+
+            return validationResult;
+        }
+
+        private validateArguments(parsedArguments: ParsedArgument[]): ValidationResult {
+            let validationResult = new ValidationResult(this.validationOptions.errorFormatSeparator);
+
+            for (let parsedArgument of parsedArguments) {
                 try {
-                    this.tryValidate(matcher, value)
-                } catch(e) {
-                    if(failHandler) {
-                        failHandler(e);
-                    } else {
-                        throw e;
+                    this.validateArgument(parsedArgument);
+                } catch (validationError) {
+                    return validationResult.addError(validationError)
+                }
+            }
+            return validationResult;
+        }
+
+        private validateArgument(parsedArgument: ParsedArgument, failHandler?: (error: Errors.ValidationError) => void): void | never {
+            const matchers = parsedArgument.schema.validationMatchers;
+            const values = parsedArgument.values;
+
+            for (let value of values) {
+                for (let matcher of matchers) {
+                    try {
+                        this.tryValidate(matcher, value)
+                    } catch (validationError) {
+                        if (failHandler) {
+                            failHandler(validationError);
+                        } else {
+                            throw validationError;
+                        }
                     }
                 }
             }
         }
-    }
 
-    private tryValidate(matcher: Matcher, value: any): void | never {
-        if(!matcher.isMatching(value)) {
-            throw new Errors.ValidationError(Errors.formatValidationErrorMessage(matcher.validationErrorMessage, value));
+        private tryValidate(matcher: Matcher, value: any): void | never {
+            if (!matcher.isMatching(value)) {
+                throw new Errors.ValidationError(matcher.validationErrorMessage, value);
+            }
         }
     }
 }
+
