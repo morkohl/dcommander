@@ -55,7 +55,7 @@ export namespace Types {
         convertValue(value: string): number | never{
             const castResult = Number(value);
             if (isNaN(castResult)) {
-                throw new Errors.ConversionError(`could not convert ${value} to a number`);
+                throw new Errors.ConversionError(`could not convert ${value} to a number`, value);
             }
             return castResult;
         }
@@ -73,7 +73,7 @@ export namespace Types {
             if (BooleanValueType.equalsTrue(value)) {
                 return true;
             }
-            throw new Errors.ConversionError(`could not convert ${value} to a boolean`);
+            throw new Errors.ConversionError(`could not convert ${value} to a boolean`, value);
         }
 
         convertValues(values: string[]): boolean[] | never {
@@ -110,7 +110,7 @@ export namespace Types {
         }
 
         private throwError(value: string, additionalError?: Error): Errors.ConversionError {
-            throw new Errors.ConversionError(`could not convert ${value} to ${this.typeName}`, additionalError);
+            throw new Errors.ConversionError(`could not convert ${value} to ${this.typeName}`, value, additionalError);
         }
 
         convertValues(values: string[]): S[] | any | never{
@@ -125,7 +125,7 @@ export namespace Types {
             if(!isNaN(date.getTime()) || !isNaN(dateFromValueAsNumber.getTime())) {
                 return !isNaN(date.getTime()) ? date : dateFromValueAsNumber
             }
-            throw new Errors.ConversionError(`${value} is an invalid date`);
+            throw new Errors.ConversionError(`${value} is an invalid date`, value);
         }
     }
 }
