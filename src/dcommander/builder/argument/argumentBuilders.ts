@@ -1,5 +1,10 @@
 import {Builder} from "../builder";
-import {ArgumentSchema, ArgumentsLength, OptionalArgumentSchema} from "../../argument/argumentSchema";
+import {
+    ArgumentSchema,
+    ArgumentsLength,
+    OptionalArgumentSchema,
+    SanitizationFunction
+} from "../../argument/argumentSchema";
 import {Matcher} from "../../validation/matchers/matchers";
 import {Types} from "../../argument/value/types";
 import {MatcherBuilders} from "../validation/matcherBuilder";
@@ -28,6 +33,7 @@ export namespace ArgumentBuilders {
         protected _argumentsLength: ArgumentsLength;
         protected _defaultValue: any;
         protected _matchers: Matcher[] = [];
+        protected _sanitization: SanitizationFunction;
 
         constructor(name: string) {
             this._name = name;
@@ -50,6 +56,11 @@ export namespace ArgumentBuilders {
 
         default(defaultValue: any): this {
             this._defaultValue = defaultValue;
+            return this;
+        }
+
+        sanitization(sanitizationFunction: SanitizationFunction) {
+            this._sanitization = sanitizationFunction;
             return this;
         }
 
@@ -101,6 +112,7 @@ export namespace ArgumentBuilders {
                     defaultValue: this._defaultValue
                 },
                 validationMatchers: this._matchers,
+                sanitization: this._sanitization
             }
         }
     }
@@ -160,7 +172,8 @@ export namespace ArgumentBuilders {
                 validationMatchers: this._matchers,
                 identifiers: this._identifiers || [(this.buildOptions.defaultIdentifierPrefix) + this._name, (this.buildOptions.defaultIdentifierShortPrefix) + this._name.charAt(0)],
                 allowDuplicates: this._allowDuplicates,
-                flag: this._flag
+                flag: this._flag,
+                sanitization: this._sanitization
             }
         }
     }

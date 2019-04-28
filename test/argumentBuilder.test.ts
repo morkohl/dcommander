@@ -45,6 +45,13 @@ describe("ArgumentBuilder Test", () => {
         expect(result.validationMatchers).to.deep.eq([]);
     });
 
+    it("should build with a SanitizationFunction", () => {
+        const sanitizationFunction = (value: any) => value * 5;
+        const result = builder.sanitization(sanitizationFunction).build();
+
+        expect(result.sanitization).to.eq(sanitizationFunction);
+    });
+
     describe("Building With Matchers and Types", () => {
         it("should build with a StringValueType if any() was chosen", () => {
             const result = builder.any().build();
