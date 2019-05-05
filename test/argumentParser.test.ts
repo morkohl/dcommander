@@ -8,34 +8,35 @@ const expect = chai.expect;
 const reqArgsNumeric = [RequiredArgSchemaSpec.requiredArgumentSchema, RequiredArgSchemaSpec.requiredArgumentSchemaTwoArguments];
 const optArgsNumeric = [OptionalArgSchemaSpec.optionalArgumentSchema, OptionalArgSchemaSpec.optionalArgumentSchemaTwoArguments];
 
-describe("IdentifierUtil Test", () => {
-    const identifierUtil = new IdentifierUtil(optArgsNumeric);
 
-    it("should detect an identifier", () => {
-        const result = identifierUtil.isIdentifier(OptionalArgSchemaSpec.optionalArgumentSchema.identifiers[0]);
+describe("ArgumentParser Test", () => {
+    describe("IdentifierUtil Test", () => {
+        const identifierUtil = new IdentifierUtil(optArgsNumeric);
 
-        expect(result).to.be.true;
+        it("should detect an identifier", () => {
+            const result = identifierUtil.isIdentifier(OptionalArgSchemaSpec.optionalArgumentSchema.identifiers[0]);
+
+            expect(result).to.be.true;
+        });
+
+        it("should not detect an invalid identifier", () => {
+            const result = identifierUtil.isIdentifier("not an identifier");
+
+            expect(result).to.be.false;
+        });
+
+        it("should get the appropriate optional schema for an identifier", () => {
+            const schema = OptionalArgSchemaSpec.optionalArgumentSchema;
+            const result = identifierUtil.getForIdentifier(schema.identifiers[0]);
+
+            expect(result).to.deep.eq(schema);
+        });
+
+        it("should throw an error if no valid identifier was provided", () => {
+            expect(() => identifierUtil.getForIdentifier("not an identifier")).to.throw();
+        })
     });
 
-    it("should not detect an invalid identifier", () => {
-        const result = identifierUtil.isIdentifier("not an identifier");
-
-        expect(result).to.be.false;
-    });
-
-    it("should get the appropriate optional schema for an identifier", () => {
-        const schema = OptionalArgSchemaSpec.optionalArgumentSchema;
-        const result = identifierUtil.getForIdentifier(schema.identifiers[0]);
-
-        expect(result).to.deep.eq(schema);
-    });
-
-    it("should throw an error if no valid identifier was provided", () => {
-        expect(() => identifierUtil.getForIdentifier("not an identifier")).to.throw();
-    })
-});
-
-describe('ArgumentParser Test', () => {
     let parser: ArgumentParser;
 
     it("should do nothing if no schemas and no arguments were supplied", () => {
