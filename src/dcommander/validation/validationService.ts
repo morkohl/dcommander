@@ -3,12 +3,14 @@ import {Errors} from "../error/errors";
 import {Matcher} from "./matchers/matchers";
 
 export namespace ArgumentValidation {
+    import ValidationError = Errors.ValidationError;
+
     export interface ValidationOptions {
         gatherAllValidationErrors: boolean,
         errorFormatSeparator: string
     }
 
-    const defaultValidationOptions: ValidationOptions = {
+    export const defaultValidationOptions: ValidationOptions = {
         gatherAllValidationErrors: false,
         errorFormatSeparator: '; '
     };
@@ -28,6 +30,13 @@ export namespace ArgumentValidation {
 
         hasErrors(): boolean {
             return !!this.errors.length;
+        }
+
+        throw(): never {
+            if(this.hasErrors()) {
+                throw new ValidationError(this.getMessage(), this.errors.map(error => error.failedValue))
+            }
+            throw new Error("No validation errors")
         }
 
         getMessage(): string {
@@ -63,7 +72,7 @@ export namespace ArgumentValidation {
         }
 
         private excludeSelectedFromValidation(parsedArguments: ParsedArgument[]): ParsedArgument[] {
-            return parsedArguments.filter(parsedArgument => !parsedArgument.excludeValidation);
+            return parsedArguments.filter(parsedArgument => !parsedArgument.excludeFromValidationAndSanitization);
         }
 
         private validateArgumentsCatchAllErrors(parsedArguments: ParsedArgument[]): ValidationResult {
