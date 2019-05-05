@@ -8,8 +8,8 @@ export namespace Errors {
         return format;
     }
 
-    class FailedFromValueError extends Error {
-        protected readonly failedValue: any;
+    export class FailedFromValueError extends Error {
+        readonly failedValue: any;
 
         constructor(message: string, failedValue: any) {
             super(message);
@@ -18,8 +18,8 @@ export namespace Errors {
     }
 
     export class ValidationError extends FailedFromValueError {
-        constructor(format: ValidationErrorMessageFormatter, failedValue: any) {
-            super(formatValidationErrorMessage(format, failedValue), failedValue);
+        constructor(format: ValidationErrorMessageFormatter | string, failedValue: any) {
+            super(typeof format === "function" ? formatValidationErrorMessage(format, failedValue) : format, failedValue);
         }
     }
 
