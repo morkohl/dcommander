@@ -33,7 +33,7 @@ export class ValueCollector implements Collector {
         return {
             schema: this.schema,
             values: values,
-            excludeValidation: excludeValidation
+            excludeFromValidationAndSanitization: excludeValidation
         }
     }
 
@@ -91,7 +91,7 @@ export class FlagValueCollector extends ValueCollector {
             return {
                 schema: this.schema,
                 values: this.schema.flag,
-                excludeValidation: true
+                excludeFromValidationAndSanitization: true
             }
         }
 
