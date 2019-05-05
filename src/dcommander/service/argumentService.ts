@@ -1,7 +1,7 @@
 import {ArgumentSchema, OptionalArgumentSchema} from "../argument/argumentSchema";
 import {ArgumentsNamespace} from "../argument/argument";
-import {ArgumentValidationService} from "../validation/validationService";
 import {ParsedArgument} from "./parser/argumentParser";
+import {ArgumentValidation} from "../validation/validationService";
 
 export interface ArgumentService {
     validateArguments(parsedArguments: ParsedArgument[]): void
@@ -13,11 +13,8 @@ class ArgumentServiceImpl implements ArgumentService {
     private argumentSchemas: ArgumentSchema[];
     private optionalArgumentSchemas: OptionalArgumentSchema[];
 
-    private validationService: ArgumentValidationService;
-
     constructor(argumentSchemas: ArgumentSchema[], optionalArgumentSchemas: OptionalArgumentSchema[]) {
         this.mountSchemas(argumentSchemas, optionalArgumentSchemas);
-        this.validationService = new ArgumentValidationService();
     }
 
     mountSchemas(argumentSchemas: ArgumentSchema[], optionalArgumentSchemas: OptionalArgumentSchema[]) {
@@ -30,6 +27,6 @@ class ArgumentServiceImpl implements ArgumentService {
     }
 
     validateArguments(parsedArguments: ParsedArgument[]): void {
-        this.validationService.validate(parsedArguments);
+        ArgumentValidation.validate(parsedArguments);
     }
 }
