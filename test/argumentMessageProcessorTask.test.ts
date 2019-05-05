@@ -1,6 +1,6 @@
 import * as chai from 'chai';
-import {ArgumentMessageProcessingTasks} from "../src/dcommander/argument/processor/tasks";
 import {OptionalArgSchemaSpec, RequiredArgSchemaSpec} from "./spec/argumentSchema.spec";
+import {ArgumentMessageProcessingTasks} from "../src/dcommander/argument/processor/tasks";
 
 const expect = chai.expect;
 
@@ -147,7 +147,7 @@ describe("ArgumentTask Test", () => {
             let stateAfterExecution = task.execute(state);
 
             expect(stateAfterExecution.parsedArguments[0].values[0]).to.deep.eq(testValue);
-        })
+        });
     });
 
     describe("NamespaceTransformer Task", () => {
@@ -172,6 +172,21 @@ describe("ArgumentTask Test", () => {
             expect(stateAfterExecution.argumentNamespace.reqTestArg).to.not.be.undefined;
             expect(stateAfterExecution.argumentNamespace.reqTestArg.values).to.deep.eq(["testValue"]);
             expect(stateAfterExecution.argumentNamespace.reqTestArg.schema).to.eq(RequiredArgSchemaSpec.requiredArgumentSchema);
+        });
+
+        it("should not generate an ArgumentsNameSpace if there are no parsedArguments", () => {
+            const task = new ArgumentMessageProcessingTasks.NameSpaceTransformerTask();
+
+            let state = {
+                inputArguments: [],
+                parsedArguments: [],
+                argumentNamespace: {}
+            };
+
+            const stateAfterExecution = task.execute(state);
+
+            expect(stateAfterExecution.argumentNamespace).to.deep.equal({});
         })
+
     })
 });

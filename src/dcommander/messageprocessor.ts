@@ -10,11 +10,12 @@ export abstract class MessageProcessor {
         this.state = state;
     }
 
-    process(message: any): any | ProcessingState {
-        for(let task of this.tasks) {
-            this.state = task.execute(this.state);
-        }
-        return this.state;
+    process(message: any): any {
+        return this.processWithState(message, this.state);
+    }
+
+    protected processWithState(message: any, initialState: ProcessingState): any {
+        return this.tasks.reduce((currentState, task) => task.execute(currentState), initialState)
     }
 }
 
