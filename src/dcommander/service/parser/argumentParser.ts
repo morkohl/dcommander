@@ -29,7 +29,7 @@ export class IdentifierUtil {
 }
 
 export interface ParsedArgument {
-    excludeValidation: boolean,
+    excludeFromValidationAndSanitization: boolean,
     values: any,
     schema: ArgumentSchema
 }
@@ -69,7 +69,6 @@ export class ArgumentParser {
         this.addValueCollectorIfFull(this.currentOptionalCollector);
 
         this.addDefaults();
-        //instatiate all results that have a default and that are not in results yet!
 
         return this.parsedArguments;
     }
@@ -105,8 +104,20 @@ export class ArgumentParser {
         this.identifierUtil = new IdentifierUtil(this.optionalArgumentSchemas);
     }
 
+
     private addToResults(collector: ValueCollector) {
-        this.parsedArguments = this.parsedArguments.concat([collector.getResult()]);
+        const index = this.parsedArguments.map(parsedArg => parsedArg.schema).indexOf(collector.schema);
+        const result = collector.getResult();
+
+        if(index >= 0) {
+            if(Array.isArray(this.parsedArguments[index].values)) {
+                this.parsedArguments[index].values = this.parsedArguments[index].values.concat(result.values)
+            } else {
+                this.parsedArguments[index].values = [this.parsedArguments[index].values].concat(result.values)
+            }
+        } else {
+            this.parsedArguments = this.parsedArguments.concat(result);
+        }
     }
 
     private handleIfTokenIsIdentifier(inputArgument: string): void | never {
@@ -159,12 +170,12 @@ export class ArgumentParser {
     }
 
     private isSchemaParsed(schema: ArgumentSchema): boolean {
-        return this.parsedArguments.map(parsedArg => parsedArg.schema).indexOf(schema) < 0;
+        return this.parsedArguments.find(parsedArg => parsedArg.schema === schema) !== undefined;
     }
 
     private addDefaults() {
         this.argumentSchemas
-            .filter(schema => schema.valueInfo.argumentsLength === AMBIGUITIES.ALL_OR_DEFAULT && this.isSchemaParsed(schema))
+            .filter(schema => schema.valueInfo.argumentsLength === AMBIGUITIES.ALL_OR_DEFAULT && !this.isSchemaParsed(schema))
             .forEach(schema => this.addToResults(new ValueCollector(schema)));
     }
 }
