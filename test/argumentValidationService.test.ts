@@ -16,7 +16,7 @@ describe("ArgumentValidationService Test", () => {
                 numberBuilder => numberBuilder.range(1,5)
             ).build(),
             values: [1,2,3],
-            excludeValidation: false
+            excludeFromValidationAndSanitization: false
         };
 
         const validationResult = ArgumentValidation.validate([testParsedArgument]);
@@ -32,14 +32,15 @@ describe("ArgumentValidationService Test", () => {
                 numberBuilder => numberBuilder.range(0,2)
             ).build(),
             values: [3,4],
-            excludeValidation: false
+            excludeFromValidationAndSanitization: false
         };
 
         const validationResult = ArgumentValidation.validate([testParsedArgument]);
 
         expect(validationResult.hasErrors()).to.be.true;
         expect(validationResult.errors.length).to.eq(1);
-        expect(validationResult.getMessage()).to.eq("3 is not in range of 0, 2")
+        expect(validationResult.getMessage()).to.eq("3 is not in range of 0, 2");
+        expect(() => validationResult.throw()).to.throw();
     });
 
     it("should catch all errors if that option was passed", () => {
@@ -48,7 +49,7 @@ describe("ArgumentValidationService Test", () => {
                 numberBuilder => numberBuilder.range(0,2)
             ).build(),
             values: [3,4],
-            excludeValidation: false
+            excludeFromValidationAndSanitization: false
         };
 
         const validationResult = ArgumentValidation.validate([testParsedArgument], {
@@ -67,7 +68,7 @@ describe("ArgumentValidationService Test", () => {
                 numberBuilder => numberBuilder.range(0,2)
             ).build(),
             values: [3,4],
-            excludeValidation: true
+            excludeFromValidationAndSanitization: true
         };
 
         const validationResult = ArgumentValidation.validate([testParsedArgument]);
