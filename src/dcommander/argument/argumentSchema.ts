@@ -29,9 +29,11 @@ export interface ValueInfo {
     readonly argumentsLength: ArgumentsLength;
     readonly defaultValue?: any
 }
+
 export enum AMBIGUITIES {
     ALL_OR_DEFAULT = '?',
     AT_LEAST_ONE = '+'
 }
+
 export type ArgumentsLength = AMBIGUITIES | number;
 
