@@ -25,6 +25,8 @@ export class ArgumentMessageProcessor extends MessageProcessor {
             argumentProcessingOptions = defaultArgumentProcessingOptions
         }
 
+        schemas = schemas.sort(isNumericArgumentsLength);
+
         this.setTasks([
             new ArgumentMessageProcessingTasks.ParseArgumentsTask(schemas, optionalSchemas),
             new ArgumentMessageProcessingTasks.ValidateArgumentsTask(argumentProcessingOptions.validationOptions),
@@ -47,4 +49,8 @@ export interface ArgumentsState extends ProcessingState {
     inputArguments: string[],
     parsedArguments: ParsedArgument[],
     argumentNamespace: ArgumentsNamespace,
+}
+
+function isNumericArgumentsLength(schema: ArgumentSchema): number {
+    return typeof schema.valueInfo.argumentsLength === "number" ? -1 : 1;
 }
