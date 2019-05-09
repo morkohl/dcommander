@@ -50,7 +50,7 @@ export namespace ArgumentMessageProcessingTasks {
     export class SanitizeArgumentsTask implements ArgumentsTask {
         execute(state: ArgumentsState): ArgumentsState {
             state.parsedArguments = state.parsedArguments.map(parsedArgument => {
-                if(!parsedArgument.excludeFromValidationAndSanitization && parsedArgument.excludeFromValidationAndSanitization !== undefined) {
+                if(!parsedArgument.excludeFromValidationAndSanitization && parsedArgument.schema.sanitization !== undefined) {
                     parsedArgument.values = parsedArgument.values.map(parsedArgument.schema.sanitization);
                 }
                 return parsedArgument
