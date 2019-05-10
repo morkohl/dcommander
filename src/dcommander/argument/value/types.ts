@@ -52,10 +52,10 @@ export namespace Types {
             return !isNaN(Number(value));
         }
 
-        convertValue(value: string): number | never{
+        convertValue(value: string): number | never {
             const castResult = Number(value);
             if (isNaN(castResult)) {
-                throw new Errors.ConversionError(`could not convert ${value} to a number`, value);
+                throw new Errors.ConversionError(`Could not convert ${value} to a number`, value);
             }
             return castResult;
         }
@@ -73,7 +73,7 @@ export namespace Types {
             if (BooleanValueType.equalsTrue(value)) {
                 return true;
             }
-            throw new Errors.ConversionError(`could not convert ${value} to a boolean`, value);
+            throw new Errors.ConversionError(`Could not convert ${value} to a boolean`, value);
         }
 
         convertValues(values: string[]): boolean[] | never {
@@ -98,22 +98,22 @@ export namespace Types {
         }
 
         convertValue(value: string): S | any | never {
-            if(!value.startsWith("{") || !value.endsWith("}")) {
+            if (!value.startsWith("{") || !value.endsWith("}")) {
                 this.throwError(value);
             }
 
             try {
                 return JSON.parse(value) as S
-            } catch(error) {
+            } catch (error) {
                 this.throwError(value, error);
             }
         }
 
         private throwError(value: string, additionalError?: Error): Errors.ConversionError {
-            throw new Errors.ConversionError(`could not convert ${value} to ${this.typeName}`, value, additionalError);
+            throw new Errors.ConversionError(`Could not convert ${value} to ${this.typeName}`, value, additionalError);
         }
 
-        convertValues(values: string[]): S[] | any | never{
+        convertValues(values: string[]): S[] | any | never {
             return super.convertValues(values) as S[];
         }
     }
@@ -122,7 +122,7 @@ export namespace Types {
         convertValue(value: string): Date | never {
             let date = new Date(value);
             let dateFromValueAsNumber = new Date(Number(value));
-            if(!isNaN(date.getTime()) || !isNaN(dateFromValueAsNumber.getTime())) {
+            if (!isNaN(date.getTime()) || !isNaN(dateFromValueAsNumber.getTime())) {
                 return !isNaN(date.getTime()) ? date : dateFromValueAsNumber
             }
             throw new Errors.ConversionError(`${value} is an invalid date`, value);
