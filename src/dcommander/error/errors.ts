@@ -8,7 +8,14 @@ export namespace Errors {
         return format;
     }
 
-    export class FailedFromValueError extends Error {
+    class DCommanderError extends Error {
+        constructor(message: string) {
+            super(message);
+            Object.setPrototypeOf(this, new.target.prototype)
+        }
+    }
+
+    class FailedFromValueError extends DCommanderError {
         readonly failedValue: any;
 
         constructor(message: string, failedValue: any) {
@@ -16,6 +23,8 @@ export namespace Errors {
             this.failedValue = failedValue;
         }
     }
+
+    export class ParseError extends DCommanderError {}
 
     export class ValidationError extends FailedFromValueError {
         constructor(format: ValidationErrorMessageFormatter | string, failedValue: any) {
