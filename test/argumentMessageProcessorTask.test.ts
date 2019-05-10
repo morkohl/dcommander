@@ -1,6 +1,7 @@
 import * as chai from 'chai';
 import {OptionalArgSchemaSpec, RequiredArgSchemaSpec} from "./spec/argumentSchema.spec";
 import {ArgumentMessageProcessingTasks} from "../src/dcommander/argument/processor/tasks";
+import {Errors} from "../src/dcommander/error/errors";
 
 const expect = chai.expect;
 
@@ -50,7 +51,7 @@ describe("ArgumentTask Test", () => {
                 argumentNamespace: {}
             };
 
-            expect(() => task.execute(state)).to.throw()
+            expect(() => task.execute(state)).to.throw(Errors.ParseError)
         });
     });
 
@@ -68,7 +69,7 @@ describe("ArgumentTask Test", () => {
                 argumentNamespace: {}
             };
 
-            expect(() => task.execute(state)).to.throw();
+            expect(() => task.execute(state)).to.throw(Errors.ValidationError);
         });
 
         it("should not throw an error if all values are ok", () => {

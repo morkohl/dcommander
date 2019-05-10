@@ -3,6 +3,7 @@ import {FlagValueCollector, ValueCollector} from "../src/dcommander/argument/val
 import {OptionalArgSchemaSpec, RequiredArgSchemaSpec} from "./spec/argumentSchema.spec";
 import {AMBIGUITIES} from "../src/dcommander/argument/argumentSchema";
 import {ArgumentBuilders} from "../src/dcommander/builder/argument/argumentBuilders";
+import {Errors} from "../src/dcommander/error/errors";
 
 const expect = chai.expect;
 
@@ -51,7 +52,7 @@ describe("ValueCollectors Test", () => {
 
             expect(valueCollector.isFull()).to.be.true;
 
-            expect(() => valueCollector.collect("test")).to.throw();
+            expect(() => valueCollector.collect("test")).to.throw(Error);
         });
 
         it("should return wether the number of arguments of a schema of a ValueCollector are ambiguous", () => {
@@ -103,7 +104,7 @@ describe("ValueCollectors Test", () => {
 
         it("should throw an error if a provided value cannot be converted", () => {
             const valueCollector = new ValueCollector(schemaWithType);
-            expect(() => valueCollector.collect("not a number")).to.throw();
+            expect(() => valueCollector.collect("not a number")).to.throw(Errors.ConversionError);
         })
     });
 

@@ -2,6 +2,7 @@ import * as chai from 'chai';
 import {ArgumentBuilders} from "../src/dcommander/builder/argument/argumentBuilders";
 import optionalArgumentSchema = ArgumentBuilders.optionalArgumentSchema;
 import {ArgumentValidation} from "../src/dcommander/validation/validationService";
+import {Errors} from "../src/dcommander/error/errors";
 
 
 const expect = chai.expect;
@@ -40,7 +41,7 @@ describe("ArgumentValidationService Test", () => {
         expect(validationResult.hasErrors()).to.be.true;
         expect(validationResult.errors.length).to.eq(1);
         expect(validationResult.getMessage()).to.eq("3 is not in range of 0, 2");
-        expect(() => validationResult.throw()).to.throw();
+        expect(() => validationResult.throw()).to.throw(Errors.ValidationError);
     });
 
     it("should catch all errors if that option was passed", () => {

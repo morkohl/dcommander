@@ -2,6 +2,7 @@ import * as chai from 'chai';
 import {ArgumentParser, IdentifierUtil} from "../src/dcommander/service/parser/argumentParser";
 import {AMBIGUITIES} from "../src/dcommander/argument/argumentSchema";
 import {OptionalArgSchemaSpec, RequiredArgSchemaSpec} from "./spec/argumentSchema.spec";
+import {Errors} from "../src/dcommander/error/errors";
 
 const expect = chai.expect;
 
@@ -33,7 +34,7 @@ describe("ArgumentParser Test", () => {
         });
 
         it("should throw an error if no valid identifier was provided", () => {
-            expect(() => identifierUtil.getForIdentifier("not an identifier")).to.throw();
+            expect(() => identifierUtil.getForIdentifier("not an identifier")).to.throw(Error);
         })
     });
 
@@ -87,7 +88,7 @@ describe("ArgumentParser Test", () => {
     it("should not parse duplicates", () => {
         parser = new ArgumentParser([], [OptionalArgSchemaSpec.optionalArgumentSchemaNumber]);
 
-        expect(() => parser.parse(["--number", "1", "--number", "2"])).to.throw();
+        expect(() => parser.parse(["--number", "1", "--number", "2"])).to.throw(Errors.ParseError);
     });
 
 
@@ -117,7 +118,7 @@ describe("ArgumentParser Test", () => {
         expect(parseResult[0].values).to.be.true;
         expect(parseResult[0].excludeFromValidationAndSanitization).to.be.true;
 
-        expect(() => parser.parse(["--flag", "argument"])).to.throw();
+        expect(() => parser.parse(["--flag", "argument"])).to.throw(Errors.ParseError);
     });
 
     describe("Parse Explicit ArgumentsLength", () => {
@@ -162,14 +163,14 @@ describe("ArgumentParser Test", () => {
         it("should throw an error if too many arguments were supplied", () => {
             parser = new ArgumentParser(reqArgsNumeric, optArgsNumeric);
 
-            expect(() => parser.parse(["way", "too", "many", "arguments"])).to.throw();
-            expect(() => parser.parse(["string", "-o", "1", "2"])).to.throw();
+            expect(() => parser.parse(["way", "too", "many", "arguments"])).to.throw(Errors.ParseError);
+            expect(() => parser.parse(["string", "-o", "1", "2"])).to.throw(Errors.ParseError);
         });
 
         it("should throw an error if too few arguments", () => {
             parser = new ArgumentParser(reqArgsNumeric, optArgsNumeric);
 
-            expect(() => parser.parse(["string", "--opt"])).to.throw();
+            expect(() => parser.parse(["string", "--opt"])).to.throw(Errors.ParseError);
         });
     });
 
@@ -244,8 +245,8 @@ describe("ArgumentParser Test", () => {
             });
 
             it("should throw an error if no arguments were supplied", () => {
-                expect(() => parser.parse([])).to.throw();
-                expect(() => parser.parse(["requiredArgument", "--ambig2"])).to.throw();
+                expect(() => parser.parse([])).to.throw(Errors.ParseError);
+                expect(() => parser.parse(["requiredArgument", "--ambig2"])).to.throw(Errors.ParseError);
             })
         });
 

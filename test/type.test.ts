@@ -1,5 +1,6 @@
 import * as chai from "chai";
 import {Types} from "../src/dcommander/argument/value/types";
+import {Errors} from "../src/dcommander/error/errors";
 
 const expect = chai.expect;
 
@@ -20,7 +21,7 @@ describe("ValueType Test", () => {
             expect(type.convertValue("1234")).to.eq(1234);
             expect(type.convertValue("0x12")).to.eq(18);
 
-            expect(() => type.convertValue("a")).to.throw();
+            expect(() => type.convertValue("a")).to.throw(Errors.ConversionError);
         });
     });
 
@@ -85,9 +86,9 @@ describe("ValueType Test", () => {
             expect(type.convertValue("{ \"foo\": true, \"bar\": 1 }")).to.deep.eq({ foo: true, bar: 1});
             expect(type.convertValue("{}")).to.deep.eq({});
 
-            expect(() => type.convertValue("1")).to.throw();
-            expect(() => type.convertValue("[1,2,3]")).to.throw();
-            expect(() => type.convertValue("a string")).to.throw();
+            expect(() => type.convertValue("1")).to.throw(Errors.ConversionError);
+            expect(() => type.convertValue("[1,2,3]")).to.throw(Errors.ConversionError);
+            expect(() => type.convertValue("a string")).to.throw(Errors.ConversionError);
         })
     });
 
@@ -105,7 +106,7 @@ describe("ValueType Test", () => {
             expect(type.convertValue("1553525305044")).to.deep.eq(new Date(1553525305044));
             expect(type.convertValue("Mon Mar 25 2019")).to.deep.eq(new Date("Mon Mar 25 2019"));
 
-            expect(() => type.convertValue("a string")).to.throw();
+            expect(() => type.convertValue("a string")).to.throw(Errors.ConversionError);
         })
     });
 
