@@ -1,5 +1,6 @@
 import {AMBIGUITIES, ArgumentSchema, OptionalArgumentSchema,} from "../../argument/argumentSchema";
 import {FlagValueCollector, ValueCollector} from "../../argument/value/collector";
+import {Errors} from "../../error/errors";
 
 export class IdentifierUtil {
     private readonly optionalSchemas: OptionalArgumentSchema[];
@@ -61,7 +62,7 @@ export class ArgumentParser {
             } else if (this.currentRequiredCollector) {
                 this.handleIfCurrentRequiredCollectorIsSet(inputArgument);
             } else {
-                throw new Error("Too many arguments");
+                throw new Errors.ParseError("Too many arguments");
             }
         }
 
@@ -77,11 +78,11 @@ export class ArgumentParser {
         if (currentCollector) {
             if (currentCollector.isFull() || currentCollector.isAmbiguous()) {
                 if (currentCollector.isSpecificAmbiguous(AMBIGUITIES.AT_LEAST_ONE) && currentCollector.isEmpty()) {
-                    throw new Error(`Expected at least one argument but got 0`);
+                    throw new Errors.ParseError(`Expected at least one argument but got 0`);
                 }
                 this.addToResults(currentCollector);
             } else {
-                throw new Error(`Expected ${currentCollector.argumentsLength.toString()} arguments but got ${currentCollector.valuesLength}`)
+                throw new Errors.ParseError(`Expected ${currentCollector.argumentsLength.toString()} arguments but got ${currentCollector.valuesLength}`)
             }
 
         }
@@ -130,7 +131,7 @@ export class ArgumentParser {
 
         if(this.isSchemaParsed(optionalArgumentSchema)) {
             if(!optionalArgumentSchema.allowDuplicates) {
-                throw new Error(`Duplicate call for argument ${inputArgument}`);
+                throw new Errors.ParseError(`Duplicate call for argument ${inputArgument}`);
             }
         }
 
@@ -161,7 +162,7 @@ export class ArgumentParser {
                     this.currentRequiredCollector = new ValueCollector(nextSchema);
                     this.currentRequiredCollector.collect(inputArgument);
                 } else {
-                    throw new Error("Too many arguments.")
+                    throw new Errors.ParseError("Too many arguments.")
                 }
             } else {
                 this.currentRequiredCollector.collect(inputArgument);
