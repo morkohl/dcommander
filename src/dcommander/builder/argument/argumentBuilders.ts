@@ -178,11 +178,11 @@ export namespace ArgumentBuilders {
         }
     }
 
-    export function argumentSchema(name: string): ArgumentBuilder {
+    export function argument(name: string): ArgumentBuilder {
         return new ArgumentSchemaBuilder(name);
     }
 
-    export function optionalArgumentSchema(name: string, options?: OptionalArgumentOptions): OptionalArgumentBuilder {
+    export function optionalArgument(name: string, options?: OptionalArgumentOptions): OptionalArgumentBuilder {
         return new OptionalArgumentSchemaBuilder(name, options);
     }
 

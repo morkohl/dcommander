@@ -27,6 +27,6 @@ class ArgumentServiceImpl implements ArgumentService {
     }
 
     validateArguments(parsedArguments: ParsedArgument[]): void {
-        ArgumentValidation.validate(parsedArguments);
+        ArgumentValidation.validateParsedArguments(parsedArguments);
     }
 }

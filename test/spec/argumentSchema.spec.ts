@@ -1,8 +1,8 @@
 import {ArgumentBuilders} from "../../src/dcommander/builder/argument/argumentBuilders";
 import {AMBIGUITIES} from "../../src/dcommander/argument/argumentSchema";
 
-const argSchema = ArgumentBuilders.argumentSchema;
-const optArgSchema = ArgumentBuilders.optionalArgumentSchema;
+const argSchema = ArgumentBuilders.argument;
+const optArgSchema = ArgumentBuilders.optionalArgument;
 
 export namespace RequiredArgSchemaSpec {
     export const requiredArgumentSchema = argSchema("reqTestArg").build();

@@ -73,7 +73,7 @@ describe("ValueCollectors Test", () => {
             expect(anotherAmbiguousValueCollector.isSpecificAmbiguous(AMBIGUITIES.AT_LEAST_ONE)).to.be.false;
         });
 
-        const schemaWithType = ArgumentBuilders.argumentSchema("number")
+        const schemaWithType = ArgumentBuilders.argument("number")
             .default(42)
             .argumentsLength(AMBIGUITIES.ALL_OR_DEFAULT)
             .number(numberBuilder => numberBuilder)

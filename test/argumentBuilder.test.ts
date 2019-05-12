@@ -12,15 +12,15 @@ describe("ArgumentBuilders Test", () => {
         let builder: ArgumentBuilders.ArgumentBuilder;
 
         beforeEach(() => {
-            builder = ArgumentBuilders.argumentSchema(testArgumentName);
+            builder = ArgumentBuilders.argument(testArgumentName);
         });
 
-        it("should build an argumentSchema _schema", () => {
+        it("should build an argument schema", () => {
             expect(() => builder.build()).to.not.throw();
             expect(builder.build().argumentInfo.name).to.eq(testArgumentName);
         });
 
-        it("should build with the argumentSchema info", () => {
+        it("should build with argument info", () => {
             const testDescription = "test";
             const testUsage = "test";
 
@@ -30,7 +30,7 @@ describe("ArgumentBuilders Test", () => {
             expect(result.argumentInfo.usage).to.eq(testUsage);
         });
 
-        it("should build with proposed amount of arguments of an argumentSchema", () => {
+        it("should build with proposed amount of arguments of an argument", () => {
             const testArgumentsLength = AMBIGUITIES.ALL_OR_DEFAULT;
 
             const result = builder.argumentsLength(testArgumentsLength).build();
@@ -109,10 +109,10 @@ describe("ArgumentBuilders Test", () => {
         const testIdentifiers = ["--testArgumentName", "-t"];
 
         beforeEach(() => {
-            builder = ArgumentBuilders.optionalArgumentSchema(testArgumentName);
+            builder = ArgumentBuilders.optionalArgument(testArgumentName);
         });
 
-        it("should build an optional argumentSchema _schema", () => {
+        it("should build an optional argument _schema", () => {
             const result = builder.build();
 
             expect(result.argumentInfo.name).to.eq(testArgumentName);
@@ -129,7 +129,7 @@ describe("ArgumentBuilders Test", () => {
         });
 
         it("should build with identifiers with the prefixes of supplied options", () => {
-            builder = ArgumentBuilders.optionalArgumentSchema(testArgumentName, { defaultIdentifierPrefix: '!!', defaultIdentifierShortPrefix: '!'});
+            builder = ArgumentBuilders.optionalArgument(testArgumentName, { defaultIdentifierPrefix: '!!', defaultIdentifierShortPrefix: '!'});
 
             const result = builder.build();
 
@@ -138,7 +138,7 @@ describe("ArgumentBuilders Test", () => {
         });
 
         it("should build with the allowDuplicates flag if chosen", () => {
-            builder = ArgumentBuilders.optionalArgumentSchema(testArgumentName).allowDuplicates();
+            builder = ArgumentBuilders.optionalArgument(testArgumentName).allowDuplicates();
 
             const result = builder.build();
 
@@ -150,7 +150,7 @@ describe("ArgumentBuilders Test", () => {
 
             expect(result.flag).to.be.true;
 
-            builder = ArgumentBuilders.optionalArgumentSchema(testArgumentName).flag(false);
+            builder = ArgumentBuilders.optionalArgument(testArgumentName).flag(false);
 
             const andAnotherResult = builder.build();
 

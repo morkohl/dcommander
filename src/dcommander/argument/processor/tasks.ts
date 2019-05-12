@@ -37,7 +37,7 @@ export namespace ArgumentMessageProcessingTasks {
         }
 
         execute(state: ArgumentsState): ArgumentsState | never {
-            let validationResult = ArgumentValidation.validate(state.parsedArguments, this.validationOptions);
+            let validationResult = ArgumentValidation.validateParsedArguments(state.parsedArguments, this.validationOptions);
 
             if(validationResult.hasErrors()) {
                 validationResult.throw()
