@@ -1,6 +1,7 @@
 import {ParsedArgument} from "../service/parser/argumentParser";
 import {Errors} from "../error/errors";
 import {Matcher} from "./matchers/matchers";
+import {ArgumentSchema} from "../argument/argumentSchema";
 
 export namespace ArgumentValidation {
     import ValidationError = Errors.ValidationError;
@@ -44,24 +45,31 @@ export namespace ArgumentValidation {
         }
     }
 
-    export function validate(parsedArguments: ParsedArgument[], validationOptions?: ValidationOptions): ValidationResult {
-        if(validationOptions) {
-            validationOptions.errorFormatSeparator = validationOptions.errorFormatSeparator ? validationOptions.errorFormatSeparator : defaultValidationOptions.errorFormatSeparator;
-        } else {
-            validationOptions = defaultValidationOptions;
-        }
+    export function validateParsedArguments(parsedArguments: ParsedArgument[], validationOptions?: ValidationOptions): ValidationResult {
+        return new ArgumentValidationService(validationOptions).validateParsedArguments(parsedArguments);
+    }
 
-        return new ArgumentValidationService(validationOptions).validate(parsedArguments);
+    export function validate(schema: ArgumentSchema, values: any) {
+        return new ArgumentValidationService().validate(schema, values);
     }
 
     class ArgumentValidationService {
         private validationOptions: ValidationOptions;
 
-        constructor(validationOptions: ValidationOptions) {
-            this.validationOptions = validationOptions;
+        constructor(validationOptions?: ValidationOptions) {
+            if(validationOptions) {
+                validationOptions.errorFormatSeparator = validationOptions.errorFormatSeparator ? validationOptions.errorFormatSeparator : defaultValidationOptions.errorFormatSeparator;
+                this.validationOptions = validationOptions;
+            } else {
+                this.validationOptions = defaultValidationOptions;
+            }
         }
 
-        validate(parsedArguments: ParsedArgument[]): ValidationResult {
+        validate(schema: ArgumentSchema, values: any) {
+            return this.validateArgument(schema, values);
+        }
+
+        validateParsedArguments(parsedArguments: ParsedArgument[]): ValidationResult {
             parsedArguments = this.excludeSelectedFromValidation(parsedArguments);
 
             if (this.validationOptions.gatherAllValidationErrors) {
@@ -79,7 +87,7 @@ export namespace ArgumentValidation {
             let validationResult = new ValidationResult(this.validationOptions.errorFormatSeparator);
 
             for (let parsedArgument of parsedArguments) {
-                this.validateArgument(parsedArgument, validationError => validationResult.addError(validationError));
+                this.validateArgument(parsedArgument.schema, parsedArgument.values, validationError => validationResult.addError(validationError));
             }
 
             return validationResult;
@@ -90,7 +98,7 @@ export namespace ArgumentValidation {
 
             for (let parsedArgument of parsedArguments) {
                 try {
-                    this.validateArgument(parsedArgument);
+                    this.validateArgument(parsedArgument.schema, parsedArgument.values);
                 } catch (validationError) {
                     return validationResult.addError(validationError)
                 }
@@ -98,9 +106,8 @@ export namespace ArgumentValidation {
             return validationResult;
         }
 
-        private validateArgument(parsedArgument: ParsedArgument, failHandler?: (error: Errors.ValidationError) => void): void | never {
-            const matchers = parsedArgument.schema.validationMatchers;
-            const values = parsedArgument.values;
+        private validateArgument(schema: ArgumentSchema, values: any, failHandler?: (error: Errors.ValidationError) => void): void | never {
+            const matchers = schema.validationMatchers;
 
             for (let value of values) {
                 for (let matcher of matchers) {
